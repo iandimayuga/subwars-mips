@@ -1,7 +1,7 @@
 # Subwars C implementation
 CC = gcc
-SOURCE = 
-OUTPUT = 
+SOURCE = main.c math.c
+OUTPUT = subwars
 
 all:
 	$(CC) -Wall -o $(OUTPUT) $(SOURCE)
