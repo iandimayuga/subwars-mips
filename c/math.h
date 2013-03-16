@@ -7,10 +7,10 @@
 
 #include <stdbool.h>
 
-// two-dimensional data structure
-typedef struct {
-    int x;
-    int y;
+// two-dimensional data structure (8 bytes)
+typedef struct vector {
+    int x; // 4 bytes
+    int y; // 4 bytes
 } vector;
 
 // vector addition
