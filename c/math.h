@@ -15,9 +15,9 @@ typedef struct {
 vector add(vector v0, vector v1);
 
 // vector-scalar multiplication
-vector mult(vector v, scalar s);
+vector mult(vector v, int s);
 
 // dot product
 int dot(vector v0, vector v1);
 
-#endif
+#endif // MATH_H
