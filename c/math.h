@@ -5,6 +5,8 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <stdbool.h>
+
 // two-dimensional data structure
 typedef struct {
     int x;
@@ -19,5 +21,8 @@ vector mult(vector v, int s);
 
 // dot product
 int dot(vector v0, vector v1);
+
+// raytrace collision
+bool collide(vector initial, vector ray, vector target);
 
 #endif // MATH_H

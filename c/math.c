@@ -41,3 +41,16 @@ int dot(vector v0, vector v1)
     // Return the int
     return dotProduct;
 }
+
+bool collide(vector initial, vector ray, vector target)
+{
+    // Subtract initial from target to get expected ray
+    vector expected = add(target, mult(initial, -1));
+
+    // Dot expected ray with actual ray
+    int dotProduct = dot(expected, ray);
+
+    // If product is equal to the product of lengths, vectors are parallel
+    // Compare dot product (squared) with product of lengths (squared)
+    return dotProduct * dotProduct == dot(expected, expected) * dot(ray, ray);
+}
