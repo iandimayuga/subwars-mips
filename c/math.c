@@ -54,3 +54,29 @@ bool collide(vector initial, vector ray, vector target)
     // Compare dot product (squared) with product of lengths (squared)
     return dotProduct * dotProduct == dot(expected, expected) * dot(ray, ray);
 }
+
+vector left(vector v)
+{
+    // Allocate the resultant struct
+    vector leftTurn;
+
+    // Assign rotated values
+    leftTurn.x = -v.y;
+    leftTurn.y = v.x;
+
+    // Return the struct
+    return leftTurn;
+}
+
+vector right(vector v)
+{
+    // Allocate the resultant struct
+    vector rightTurn;
+
+    // Assign rotated values
+    rightTurn.x = v.y;
+    rightTurn.y = -v.x;
+
+    // Return the struct
+    return rightTurn;
+}

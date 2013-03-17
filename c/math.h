@@ -25,4 +25,10 @@ int dot(vector v0, vector v1);
 // raytrace collision
 bool collide(vector initial, vector ray, vector target);
 
+// 90-degree counter-clockwise rotation
+vector left(vector v);
+
+// 90-degree clockwise rotation
+vector right(vector v);
+
 #endif // MATH_H
