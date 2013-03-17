@@ -7,6 +7,7 @@
 
 #include "math.h"
 
+// Submarine state structure (16 bytes)
 typedef struct submarine {
     vector position; // 8 bytes
     vector rotation; // 8 bytes
