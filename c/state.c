@@ -6,8 +6,8 @@
 
 //this assumes that subs are created in main and passed here to get initialized
 void create_subs(submarine A, submarine B) {
-	A = {/*inline vector declaration*/,/*vector*/, false, false, true, &B};
-	B = {/*vector*/, /*vector*/, false, false, true, &A};
+	A = {{0, 0}, {1,0}, false, false, true};
+	B = {{10, 10}, {-1, 0}, false, false, true};
 }
 
 void reset_sub(submarine sub) {
@@ -19,14 +19,13 @@ void reset_sub(submarine sub) {
 //this method assumes that you issue a move forward command every turn
 void sub_move(submarine sub) {
 	sub.moving = true;
-	/* TODO: vector math here */
+	sub.position = add(sub.position, sub.rotation);
 }
 
-void sub_fire(submarine sub){
+void sub_fire(submarine sub, submarine target){
 	sub.fire = true;
-	struct submarine *other = sub.other_sub;
-	if collision(sub.position, sub.rotation, (other)->position) {
-		(other)->alive = false;
+	if collision(sub.position, sub.rotation, target.position) {
+		target.alive = false;
 	}
 }
 
