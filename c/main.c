@@ -25,22 +25,16 @@ int main()
 
     while (player1.alive && player2.alive)
     {
-        printf("\n*** 0: move, 1: left, 2: right, 3: ping, 4: fire\n");
-        // output current state for player 1
-        printf("\nPlayer 1 position = %d,%d\n", player1.position.x, player1.position.y);
-        printf("Player 1 rotation = %d,%d\n", player1.rotation.x, player1.rotation.y);
-
-        // prompt users for input
         int command1, command2;
-        printf("Player 1 input: ");
+        // Generate alerts for player 1
+        generate_alerts(1, player1, player2);
+
+        // prompt player 1 for input
         scanf("%d", &command1);
 
-        // output current state for player 2
-        printf("\nPlayer 2 position = %d,%d\n", player2.position.x, player2.position.y);
-        printf("Player 2 rotation = %d,%d\n", player2.rotation.x, player2.rotation.y);
+        generate_alerts(2, player2, player1);
 
         // prompt player 2 for input
-        printf("Player 2 input: ");
         scanf("%d", &command2);
 
         // reset the action flags
@@ -54,15 +48,10 @@ int main()
         // evaluate actions (fires, pings)
         evaluate_action(&player1, &player2, command1);
         evaluate_action(&player2, &player1, command2);
-
-        if (player1.ping) printf("Player 1 pinged!\n");
-        if (player1.fire) printf("Player 1 fired!\n");
-        if (!player1.alive) printf("Player 1 dead.\n");
-
-        if (player2.ping) printf("Player 2 pinged!\n");
-        if (player2.fire) printf("Player 2 fired!\n");
-        if (!player2.alive) printf("Player 2 dead.\n");
     }
+
+    if (!player1.alive) printf("Player 1 dead.\n");
+    if (!player2.alive) printf("Player 2 dead.\n");
 
     return 0;
 }
