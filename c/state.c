@@ -6,12 +6,18 @@
 
 //this assumes that subs are created in main and passed here to get initialized
 void create_subs(submarine A, submarine B) {
-	//it's simpler to do this then to declare values line by line
-	//which is admittedly what we'll have to do for MIPS
-	submarine one = {{0, 0}, {1, 0}, false, false, true};
-	A = one;
-	submarine two = {{10, 10}, {-1, 0}, false, false, true};
-	B = two;
+        vector botLeft = {0, 0};
+        vector topRight = {10, 10};
+        vector right = {1, 0};
+        vector left = {-1, 0};
+        A.position = botLeft;
+        A.rotation = right;
+        B.position = topRight;
+        B.rotation = left;
+        A.moving = B.moving = false;
+        A.fire = B.fire = false;
+        A.alive = B.alive = true;
+        A.ping = B.ping = false;
 }
 
 //alternate way to make a single sub, commented out since we aren't using it
