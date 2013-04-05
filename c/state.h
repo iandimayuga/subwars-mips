@@ -18,22 +18,25 @@ typedef struct submarine {
 } submarine;
 
 //resets the booleans moving, fire and ping after each round
-void reset_sub(submarine sub);
+void reset_sub(submarine* sub);
 
 //initialize two submarine structs at the start of the game
-void create_subs(submarine A, submarine B);
+void create_subs(submarine* A, submarine* B);
 
 //move the passed submarine
-void sub_move(submarine sub);
+void sub_move(submarine* sub);
 
 //rotate the passed submarine
-void sub_rotate_left(submarine sub);
+void sub_rotate_left(submarine* sub);
 
-void sub_rotate_right(submarine sub);
+void sub_rotate_right(submarine* sub);
 
 //set the passed submarine to fire
-void sub_fire(submarine sub, submarine target);
+void sub_fire(submarine* sub, submarine* target);
 
-void sub_ping(submarine sub);
+void sub_ping(submarine* sub);
+
+//applies a command to a player's sub
+void evaluate(submarine* sub, int command);
 
 #endif // STATE_H
