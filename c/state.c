@@ -14,7 +14,7 @@ void create_subs(submarine* A, submarine* B) {
         A->rotation = right;
         B->position = topRight;
         B->rotation = left;
-        A->moving = B->moving = false;
+        A->move = B->move = false;
         A->fire = B->fire = false;
         A->alive = B->alive = true;
         A->ping = B->ping = false;
@@ -28,14 +28,14 @@ void create_subs(submarine* A, submarine* B) {
  */
 
 void reset_sub(submarine* sub) {
-	sub->moving = false;
+	sub->move = false;
 	sub->fire = false;
 	sub->ping = false;
 }
 
 //this method assumes that you issue a move forward command every turn
 void sub_move(submarine* sub) {
-	sub->moving = true;
+	sub->move = true;
 	sub->position = add(sub->position, sub->rotation);
 }
 
