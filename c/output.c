@@ -13,7 +13,7 @@
 #define FIRE_BEHIND_ALERT "Torpedo launch detected behind us!\n"
 #define FIRE_TOWARD_ALERT "Sonar has confirmed torpedo was launched toward us but missed!\n"
 #define FIRE_AWAY_ALERT "It was launched in entirely the wrong direction!\n"
-#define CONSOLE_CLEAR "\n\n\n\n\n\n\n\n"
+#define CONSOLE_CLEAR "\e[1;1H\e[2J"
 #define PLAYER_READY "PLAYER %d PRESS ENTER TO CONTINUE\n"
 #define PLAYER_PROMPT "\n0: Move Forward\n1: Turn Left\n2: Turn Right\n3: Ping\n4: Fire Ahead\n\nWhat are your orders, Captain? "
 

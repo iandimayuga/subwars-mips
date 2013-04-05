@@ -31,11 +31,13 @@ int main()
 
         // prompt player 1 for input
         scanf("%d", &command1);
+        getchar();
 
         generate_alerts(2, player2, player1);
 
         // prompt player 2 for input
         scanf("%d", &command2);
+        getchar();
 
         // reset the action flags
         reset_sub(&player1);
