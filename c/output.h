@@ -12,6 +12,8 @@ void generate_alerts(int player, submarine sub, submarine enemy);
 
 void get_ready(int player);
 
+void alert_status(submarine sub);
+
 void alert_motion(submarine sub, submarine enemy);
 
 void alert_pinger(submarine enemy);

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "output.h"
 
+#define STATUS_ALERT "Captain! Our current position is %d N %d E, facing %s.\n"
 #define MOTION_ALERT "Sonar alerts enemy sub in motion somewhere in front of us!\n"
 #define PINGER_ALERT "Sonar has determined enemy position at %d N %d E. However, the enemy has heard the ping as well!\n"
 #define PINGEE_ALERT "A ping has been detected originating at %d N %d E!\n"
@@ -19,6 +20,7 @@
 void generate_alerts(int player, submarine sub, submarine enemy)
 {
     get_ready(player);
+    alert_status(sub);
     alert_fire(sub, enemy);
     alert_motion(sub, enemy);
     alert_pingee(enemy);
@@ -31,6 +33,17 @@ void get_ready(int player)
     printf(CONSOLE_CLEAR);
     printf(PLAYER_READY, player);
     while (getchar() != '\n');
+}
+
+void alert_status(submarine sub)
+{
+    char* direction;
+    if (sub.rotation.x == 1) direction = "east";
+    if (sub.rotation.x == -1) direction = "west";
+    if (sub.rotation.y == 1) direction = "north";
+    if (sub.rotation.y == -1) direction = "south";
+
+    printf(STATUS_ALERT, sub.position.x, sub.position.y, direction);
 }
 
 void alert_motion(submarine sub, submarine enemy)
