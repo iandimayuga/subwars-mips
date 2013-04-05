@@ -5,11 +5,18 @@
 #include <stdio.h>
 #include "math.h"
 #include "state.h"
+#include "output.h"
 
 int main()
 {
     // intimidate players
     printf("Hello World! My name is Joseph Stalin.\nMy submarine fleet has been launched to dominate your MIPS.\n");
+    printf("PRESS ENTER TO BEGIN");
+    while (true)
+    {
+        char c=getchar();
+        if (c=='\n' || c==EOF) break;
+    }
 
     // initialize submarines
     submarine player1 = {};

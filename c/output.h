@@ -16,7 +16,7 @@ void alert_status(submarine sub);
 
 void alert_motion(submarine sub, submarine enemy);
 
-void alert_pinger(submarine enemy);
+void alert_pinger(submarine sub, submarine enemy);
 
 void alert_pingee(submarine enemy);
 

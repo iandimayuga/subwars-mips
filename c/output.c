@@ -15,7 +15,7 @@
 #define FIRE_AWAY_ALERT "It was launched in entirely the wrong direction!\n"
 #define CONSOLE_CLEAR "\n\n\n\n\n\n\n\n"
 #define PLAYER_READY "PLAYER %d PRESS ENTER TO CONTINUE\n"
-#define PLAYER_PROMPT "\n0: Move Forward\n1: Turn Left\n2: Turn Right\n3: Ping\n4: Fire Ahead\n\nWhat are your orders, Captain?"
+#define PLAYER_PROMPT "\n0: Move Forward\n1: Turn Left\n2: Turn Right\n3: Ping\n4: Fire Ahead\n\nWhat are your orders, Captain? "
 
 void generate_alerts(int player, submarine sub, submarine enemy)
 {
@@ -24,7 +24,7 @@ void generate_alerts(int player, submarine sub, submarine enemy)
     alert_fire(sub, enemy);
     alert_motion(sub, enemy);
     alert_pingee(enemy);
-    alert_pinger(enemy);
+    alert_pinger(sub, enemy);
     printf(PLAYER_PROMPT);
 }
 
@@ -32,7 +32,11 @@ void get_ready(int player)
 {
     printf(CONSOLE_CLEAR);
     printf(PLAYER_READY, player);
-    while (getchar() != '\n');
+    while (true)
+    {
+        char c=getchar();
+        if (c=='\n' || c==EOF) break;
+    }
 }
 
 void alert_status(submarine sub)
@@ -64,14 +68,16 @@ void alert_motion(submarine sub, submarine enemy)
     }
 }
 
-void alert_pinger(submarine enemy)
+void alert_pinger(submarine sub, submarine enemy)
 {
-    printf(PINGER_ALERT, enemy.position.x, enemy.position.y);
+    if (sub.ping)
+        printf(PINGER_ALERT, enemy.position.x, enemy.position.y);
 }
 
 void alert_pingee(submarine enemy)
 {
-    printf(PINGEE_ALERT, enemy.position.x, enemy.position.y);
+    if (enemy.ping)
+        printf(PINGEE_ALERT, enemy.position.x, enemy.position.y);
 }
 
 void alert_fire(submarine sub, submarine enemy)
