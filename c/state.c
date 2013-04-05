@@ -58,7 +58,7 @@ void sub_ping(submarine* sub) {
 	sub->ping = true;
 }
 
-void evaluate(submarine* sub, int command)
+void evaluate_move(submarine* sub, int command)
 {
     switch (command)
     {
@@ -70,6 +70,19 @@ void evaluate(submarine* sub, int command)
             break;
         case 2:
             sub_rotate_right(sub);
+            break;
+    }
+}
+
+void evaluate_action(submarine* sub, submarine* enemy, int command)
+{
+    switch (command)
+    {
+        case 3:
+            sub_ping(sub);
+            break;
+        case 4:
+            sub_fire(sub, enemy);
             break;
     }
 }

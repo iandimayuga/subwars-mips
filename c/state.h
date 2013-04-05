@@ -36,7 +36,10 @@ void sub_fire(submarine* sub, submarine* target);
 
 void sub_ping(submarine* sub);
 
-//applies a command to a player's sub
-void evaluate(submarine* sub, int command);
+//applies a movement command to a player's sub
+void evaluate_move(submarine* sub, int command);
+
+//applies an action command to a player's sub
+void evaluate_action(submarine* sub, submarine* enemy, int command);
 
 #endif // STATE_H
