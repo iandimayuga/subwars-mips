@@ -52,8 +52,8 @@ int main()
         evaluate_action(&player2, &player1, command2);
     }
 
-    if (!player1.alive) printf("Player 1 dead.\n");
-    if (!player2.alive) printf("Player 2 dead.\n");
+    if (!player1.alive) printf("Player 1's submarine has been sunk at %d N %d E!\n", player1.position.y, player1.position.x);
+    if (!player2.alive) printf("Player 2's submarine has been sunk at %d N %d E!\n", player2.position.y, player2.position.x);
 
     return 0;
 }
