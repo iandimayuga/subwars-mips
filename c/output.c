@@ -6,7 +6,7 @@
 #include "output.h"
 
 #define STATUS_ALERT "Captain! Our current position is %d N %d E, facing %s.\n"
-#define MOTION_ALERT "Sonar alerts enemy sub in motion somewhere in front of us!\n"
+#define MOTION_ALERT "Sonar alerts enemy sub in motion somewhere ahead!\n"
 #define PINGER_ALERT "Sonar has determined enemy position at %d N %d E. However, the enemy has heard the ping as well!\n"
 #define PINGEE_ALERT "A ping has been detected originating at %d N %d E!\n"
 #define FIRE_AHEAD_ALERT "Torpedo launch detected ahead of us!\n"
@@ -47,7 +47,7 @@ void alert_status(submarine sub)
     if (sub.rotation.y == 1) direction = "north";
     if (sub.rotation.y == -1) direction = "south";
 
-    printf(STATUS_ALERT, sub.position.x, sub.position.y, direction);
+    printf(STATUS_ALERT, sub.position.y, sub.position.x, direction);
 }
 
 void alert_motion(submarine sub, submarine enemy)
@@ -71,13 +71,13 @@ void alert_motion(submarine sub, submarine enemy)
 void alert_pinger(submarine sub, submarine enemy)
 {
     if (sub.ping)
-        printf(PINGER_ALERT, enemy.position.x, enemy.position.y);
+        printf(PINGER_ALERT, enemy.position.y, enemy.position.x);
 }
 
 void alert_pingee(submarine enemy)
 {
     if (enemy.ping)
-        printf(PINGEE_ALERT, enemy.position.x, enemy.position.y);
+        printf(PINGEE_ALERT, enemy.position.y, enemy.position.x);
 }
 
 void alert_fire(submarine sub, submarine enemy)
