@@ -6,8 +6,8 @@
 
 //this assumes that subs are created in main and passed here to get initialized
 void create_subs(submarine* A, submarine* B) {
-    vector botLeft = {0, 0};
-    vector topRight = {9, 9};
+    vector botLeft = {MAP_LEFT, MAP_BOTTOM};
+    vector topRight = {MAP_RIGHT, MAP_TOP};
     vector right = {1, 0};
     vector left = {-1, 0};
     A->position = botLeft;
@@ -34,8 +34,17 @@ void reset_sub(submarine* sub) {
 }
 
 void sub_move(submarine* sub) {
-    sub->move = true;
-    sub->position = add(sub->position, sub->rotation);
+    // Check boundaries
+    vector resultant = add(sub->position, sub->rotation);
+
+    if (resultant.x >= MAP_LEFT &&
+        resultant.x <= MAP_RIGHT &&
+        resultant.y >= MAP_BOTTOM &&
+        resultant.y <= MAP_TOP)
+    {
+        sub->move = true;
+        sub->position = resultant;
+    }
 }
 
 void sub_fire(submarine* sub, submarine* target){

@@ -7,6 +7,11 @@
 
 #include "math.h"
 
+#define MAP_BOTTOM 0
+#define MAP_TOP 9
+#define MAP_LEFT 0
+#define MAP_RIGHT 9
+
 // Submarine state structure (~19 bytes)
 typedef struct submarine {
     vector position; // 8 bytes
