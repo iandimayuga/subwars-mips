@@ -19,41 +19,46 @@ int main()
     }
 
     // initialize submarines
-    submarine player1 = {};
-    submarine player2 = {};
-    create_subs(&player1, &player2);
+    submarine sub1 = {};
+    submarine sub2 = {};
+    create_subs(&sub1, &sub2);
 
-    while (player1.alive && player2.alive)
+    while (sub1.alive && sub2.alive)
     {
         int command1, command2;
         // Generate alerts for player 1
-        generate_alerts(1, player1, player2);
+        generate_alerts(sub1, sub2);
 
         // prompt player 1 for input
         scanf("%d", &command1);
         getchar();
 
-        generate_alerts(2, player2, player1);
+        generate_alerts(sub2, sub1);
 
         // prompt player 2 for input
         scanf("%d", &command2);
         getchar();
 
         // reset the action flags
-        reset_sub(&player1);
-        reset_sub(&player2);
+        reset_flags(&sub1);
+        reset_flags(&sub2);
 
-        // evaluate the move commands first
-        evaluate_move(&player1, command1);
-        evaluate_move(&player2, command2);
+        // evaluate the motion commands first
+        evaluate_motion(&sub1, command1);
+        evaluate_motion(&sub2, command2);
+
+        // check if subs collided
+        check_collision(&sub1, &sub2);
 
         // evaluate actions (fires, pings)
-        evaluate_action(&player1, &player2, command1);
-        evaluate_action(&player2, &player1, command2);
+        evaluate_action(&sub1, &sub2, command1);
+        evaluate_action(&sub2, &sub1, command2);
+
+        // Check for submarine collision
     }
 
-    if (!player1.alive) printf("Player 1's submarine has been sunk at %d N %d E!\n", player1.position.y, player1.position.x);
-    if (!player2.alive) printf("Player 2's submarine has been sunk at %d N %d E!\n", player2.position.y, player2.position.x);
+    // print endgame text
+    generate_endgame(sub1, sub2);
 
     return 0;
 }

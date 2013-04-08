@@ -26,8 +26,8 @@ typedef struct submarine {
     bool alive; // 1 byte
 } submarine;
 
-//resets the booleans moving, fire and ping after each round
-void reset_sub(submarine* sub);
+//resets the action flags before each phase execution
+void reset_flags(submarine* sub);
 
 //initialize two submarine structs at the start of the game
 void create_subs(submarine* A, submarine* B);
@@ -49,7 +49,7 @@ void sub_fire(submarine* sub, submarine* target);
 void sub_ping(submarine* sub);
 
 //applies a movement command to a player's sub
-void evaluate_move(submarine* sub, int command);
+void evaluate_motion(submarine* sub, int command);
 
 //applies an action command to a player's sub
 void evaluate_action(submarine* sub, submarine* enemy, int command);

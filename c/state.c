@@ -10,27 +10,25 @@ void create_subs(submarine* A, submarine* B) {
     vector topRight = {MAP_RIGHT, MAP_TOP};
     vector right = {1, 0};
     vector left = {-1, 0};
+    A->player = 1;
+    B->player = 2;
     A->position = botLeft;
     A->rotation = right;
     B->position = topRight;
     B->rotation = left;
-    A->move = B->move = false;
-    A->fire = B->fire = false;
+
+    reset_flags(A);
+    reset_flags(B);
+
     A->alive = B->alive = true;
-    A->ping = B->ping = false;
 }
 
-//alternate way to make a single sub, commented out since we aren't using it
-/*
- *void create_sub(vector position, vector rotation){
- *    return submarine temp = {position, rotation, false, false, true};
- *}
- */
-
-void reset_sub(submarine* sub) {
+void reset_flags(submarine* sub) {
     sub->move = false;
-    sub->fire = false;
+    sub->turn = false;
     sub->ping = false;
+    sub->fire = false;
+    sub->bounds = false;
 }
 
 void sub_move(submarine* sub) {
@@ -42,9 +40,35 @@ void sub_move(submarine* sub) {
         resultant.y >= MAP_BOTTOM &&
         resultant.y <= MAP_TOP)
     {
+        // Move if sub would stay in-bounds
         sub->move = true;
         sub->position = resultant;
+    } else {
+        // Notify otherwise, but do not move
+        sub->bounds = true;
     }
+}
+
+void check_collision(submarine* A, submarine* B)
+{
+    if (equals(A->position, B->position)) {
+        // A and B occupy the same point in space
+        A->collide = B->collide = true;
+    } else if (A->move && B->move) {
+        // check to see if they may have passed through each other (if they have both moved and are facing away from each other)
+
+        // subtract B from A
+        vector displacement = add(A->position, mult(B->position, -1));
+
+        if (equals(A->rotation, displacement) && equals(B->rotation, mult(displacement, -1)))
+        {
+            // A and B passed through each other this turn
+            A->collide = B->collide = true;
+        }
+    }
+
+    // Any collision results in death of both parties
+    if (A->collide || B->collide) A->alive = B->alive = false;
 }
 
 void sub_fire(submarine* sub, submarine* target){
@@ -55,10 +79,12 @@ void sub_fire(submarine* sub, submarine* target){
 }
 
 void sub_rotate_left(submarine* sub) {
+    sub->turn = true;
     sub->rotation = left(sub->rotation);
 }
 
 void sub_rotate_right(submarine* sub) {
+    sub->turn = true;
     sub->rotation = right(sub->rotation);
 }
 
@@ -66,7 +92,7 @@ void sub_ping(submarine* sub) {
     sub->ping = true;
 }
 
-void evaluate_move(submarine* sub, int command)
+void evaluate_motion(submarine* sub, int command)
 {
     switch (command)
     {
