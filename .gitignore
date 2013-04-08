@@ -1,5 +1,7 @@
-# C Object files
-*.o
+# Binary executable (unix)
+subwars
+# Binary executable (windows)
+subwars.exe
 
 # vim files
 *.swp
