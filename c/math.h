@@ -19,6 +19,9 @@ vector add(vector v0, vector v1);
 // vector-scalar multiplication
 vector mult(vector v, int s);
 
+// vector equality
+bool equals(vector v0, vector v1);
+
 // dot product
 int dot(vector v0, vector v1);
 

@@ -32,6 +32,11 @@ vector mult(vector v, int s)
     return product;
 }
 
+bool equals(vector v0, vector v1)
+{
+    return v0.x == v1.x && v0.y == v1.y;
+}
+
 int dot(vector v0, vector v1)
 {
     // Allocate the resultant int
