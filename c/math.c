@@ -2,6 +2,8 @@
  * Vector Math and other mathematical utilities
  */
 
+#include <string.h>
+
 #include "math.h"
 
 vector add(vector v0, vector v1)
@@ -79,4 +81,14 @@ vector right(vector v)
 
     // Return the struct
     return rightTurn;
+}
+
+char* direction(vector rotation)
+{
+    if (rotation.y > 0) return "north";
+    if (rotation.y < 0) return "south";
+    if (rotation.x > 0) return "east";
+    if (rotation.x < 0) return "west";
+
+    return "";
 }

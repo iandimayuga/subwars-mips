@@ -31,4 +31,7 @@ vector left(vector v);
 // 90-degree clockwise rotation
 vector right(vector v);
 
+// Cardinal direction names
+char* direction(vector rotation);
+
 #endif // MATH_H
