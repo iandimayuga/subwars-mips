@@ -21,7 +21,9 @@ subtract_function:
 # {
 #     return add(v0, mult(v1, -1));
 # }
+    jr
 
+mult_function:
 # vector mult(vector v, int s)
 # {
 #     // Allocate the resultant struct
