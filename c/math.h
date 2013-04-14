@@ -38,10 +38,10 @@ vector left(vector v);
 vector right(vector v);
 
 // Length of vector measured along axes (x + y)
-int manhattanLength(vector v);
+int manhattan_length(vector v);
 
 // Squared length of vector
-int squareLength(vector v);
+int square_length(vector v);
 
 // Cardinal direction names
 char* direction(vector rotation);

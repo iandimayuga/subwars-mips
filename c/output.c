@@ -87,7 +87,7 @@ void alert_motion(submarine sub, submarine enemy)
         int prod = dot(ray, sub.rotation);
 
         // alert if facing enemy in motion (does not detect directly to the side)
-        if (prod > 0 && manhattanLength(ray) <= DETECT_DISTANCE)
+        if (prod > 0 && manhattan_length(ray) <= DETECT_DISTANCE)
         {
             printf(MOTION_ALERT, DETECT_DISTANCE);
         }

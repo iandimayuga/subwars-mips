@@ -93,7 +93,7 @@ vector right(vector v)
     return rightTurn;
 }
 
-int manhattanLength(vector v)
+int manhattan_length(vector v)
 {
     int x = v.x;
     int y = v.y;
@@ -102,7 +102,7 @@ int manhattanLength(vector v)
     return x + y;
 }
 
-int squareLength(vector v)
+int square_length(vector v)
 {
     return dot(v, v);
 }
