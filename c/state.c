@@ -31,9 +31,15 @@ void reset_flags(submarine* sub) {
     sub->bounds = false;
 }
 
-void sub_move(submarine* sub) {
+void sub_move(submarine* sub, bool dir) {
     // Check boundaries
-    vector resultant = add(sub->position, sub->rotation);
+	vector resultant = {0, 0};
+	if (dir){
+		resultant = add(sub->position, sub->rotation);
+	} else {
+		vector rotation = mult(sub->rotation, -1);
+		resultant = add(sub->position, rotation);
+	}
 
     if (resultant.x >= MAP_LEFT &&
         resultant.x <= MAP_RIGHT &&
@@ -97,7 +103,7 @@ void evaluate_motion(submarine* sub, int command)
     switch (command)
     {
         case 0:
-            sub_move(sub);
+            sub_move(sub, true);
             break;
         case 1:
             sub_rotate_left(sub);
@@ -105,6 +111,8 @@ void evaluate_motion(submarine* sub, int command)
         case 2:
             sub_rotate_right(sub);
             break;
+        case 6:
+            sub_move(sub, false);
     }
 }
 

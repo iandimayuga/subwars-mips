@@ -36,7 +36,7 @@ void create_subs(submarine* A, submarine* B);
 void check_collision(submarine* A, submarine* B);
 
 //move the submarine
-void sub_move(submarine* sub);
+void sub_move(submarine* sub, bool dir);
 
 //rotate the submarine
 void sub_rotate_left(submarine* sub);
