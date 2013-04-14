@@ -26,7 +26,7 @@
 
 #define CONSOLE_CLEAR "\e[1;1H\e[2J"
 #define PLAYER_READY "PLAYER %d PRESS ENTER TO CONTINUE\n"
-#define PLAYER_MENU "\n0: Move Forward\n1: Turn Left\n2: Turn Right\n3: Ping\n4: Fire Ahead\n5: Do Nothing\n6:Backup\n"
+#define PLAYER_MENU "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n"
 #define PLAYER_PROMPT "\nWhat are your orders, Captain? "
 
 void generate_alerts(submarine sub, submarine enemy)

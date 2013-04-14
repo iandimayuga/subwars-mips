@@ -32,15 +32,16 @@ void reset_flags(submarine* sub) {
 }
 
 void sub_move(submarine* sub, bool dir) {
-    // Check boundaries
-	vector resultant = {0, 0};
-	if (dir){
-		resultant = add(sub->position, sub->rotation);
-	} else {
-		vector rotation = mult(sub->rotation, -1);
-		resultant = add(sub->position, rotation);
-	}
+    // Determine direction
+    vector resultant = {0, 0};
+    if (dir) {
+	resultant = add(sub->position, sub->rotation);
+    } else {
+        vector rotation = mult(sub->rotation, -1);
+        resultant = add(sub->position, rotation);
+    }
 
+    // Check boundaries
     if (resultant.x >= MAP_LEFT &&
         resultant.x <= MAP_RIGHT &&
         resultant.y >= MAP_BOTTOM &&
@@ -106,13 +107,13 @@ void evaluate_motion(submarine* sub, int command)
             sub_move(sub, true);
             break;
         case 1:
+            sub_move(sub, false);
+        case 2:
             sub_rotate_left(sub);
             break;
-        case 2:
+        case 3:
             sub_rotate_right(sub);
             break;
-        case 6:
-            sub_move(sub, false);
     }
 }
 
@@ -120,10 +121,10 @@ void evaluate_action(submarine* sub, submarine* enemy, int command)
 {
     switch (command)
     {
-        case 3:
+        case 4:
             sub_ping(sub);
             break;
-        case 4:
+        case 5:
             sub_fire(sub, enemy);
             break;
     }
