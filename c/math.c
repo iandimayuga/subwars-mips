@@ -88,6 +88,20 @@ vector right(vector v)
     return rightTurn;
 }
 
+int manhattanLength(vector v)
+{
+    int x = v.x;
+    int y = v.y;
+    if (x < 0) x = -x;
+    if (y < 0) y = -y;
+    return x + y;
+}
+
+int squareLength(vector v)
+{
+    return dot(v, v);
+}
+
 char* direction(vector rotation)
 {
     if (rotation.y > 0) return "north";

@@ -34,6 +34,12 @@ vector left(vector v);
 // 90-degree clockwise rotation
 vector right(vector v);
 
+// Length of vector measured along axes (x + y)
+int manhattanLength(vector v);
+
+// Squared length of vector
+int squareLength(vector v);
+
 // Cardinal direction names
 char* direction(vector rotation);
 
