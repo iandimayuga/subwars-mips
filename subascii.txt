@@ -1,0 +1,44 @@
+
+           North
+             ^
+      West <   > East
+             v
+           South
+
+
+          Starboard
+             __
+          __|~ |___
+  Ahead  ( ==      `- Astern
+
+            Port
+
+
+            Port
+              __
+          ___| ~|__
+ Astern -'      == )  Ahead
+
+          Starboard
+
+
+           Ahead
+
+             --
+            |  |
+     Port  ||()|| Starboard
+            |  |
+            |  |
+             /\
+           Astern
+
+
+           Astern
+             \/
+            |  |
+            |  |
+ Starboard ||()||  Port
+            |  |
+             --
+
+           Ahead
