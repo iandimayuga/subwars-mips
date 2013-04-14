@@ -8,6 +8,8 @@
 #include "math.h"
 #include "state.h"
 
+#define DETECT_DISTANCE 5
+
 // Print alerts at beginning of turn
 void generate_alerts(submarine sub, submarine enemy);
 

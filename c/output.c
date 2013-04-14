@@ -8,7 +8,7 @@
 #include "output.h"
 
 #define STATUS_ALERT "Captain! Our current position is %d N %d E, facing %s.\n"
-#define MOTION_ALERT "Sonar alerts enemy sub in motion somewhere ahead!\n"
+#define MOTION_ALERT "Sonar alerts enemy sub in motion somewhere ahead, within %d units!\n"
 #define PINGER_ALERT "Sonar has determined enemy position at %d N %d E. However, the enemy has heard the ping as well!\n"
 #define PINGEE_ALERT "A ping has been detected originating at %d N %d E!\n"
 #define FIRE_AHEAD_ALERT "Torpedo launch detected originating ahead of us!\n"
@@ -105,10 +105,10 @@ void alert_motion(submarine sub, submarine enemy)
         // compare direction to enemy with current rotation
         int prod = dot(ray, sub.rotation);
 
-        // alert if facing enemy in motion
-        if (prod > 0)
+        // alert if facing enemy in motion (does not detect directly to the side)
+        if (prod > 0 && manhattanLength(ray) <= DETECT_DISTANCE)
         {
-            printf(MOTION_ALERT);
+            printf(MOTION_ALERT, DETECT_DISTANCE);
         }
     }
 }
