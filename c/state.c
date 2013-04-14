@@ -107,6 +107,7 @@ void evaluate_motion(submarine* sub, int command)
             break;
         case 1:
             sub_move(sub, false);
+            break;
         case 2:
             sub_rotate_left(sub);
             break;
