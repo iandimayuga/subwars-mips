@@ -14,14 +14,14 @@ add_function:
 #     // Return the struct
 #     return sum;
 # }
-    jr
+    jr $ra
 
 subtract_function:
 # vector subtract(vector v0, vector v1)
 # {
 #     return add(v0, mult(v1, -1));
 # }
-    jr
+    jr $ra
 
 mult_function:
 # vector mult(vector v, int s)
@@ -36,7 +36,7 @@ mult_function:
 #     // Return the struct
 #     return product;
 # }
-    jr
+    jr $ra
 
 equals_function:
 # bool equals(vector v0, vector v1)
@@ -55,7 +55,7 @@ equals_function:
 #     // Return the int
 #     return dotProduct;
 # }
-    jr
+    jr $ra
 
 collide_function:
 # bool collide(vector initial, vector ray, vector target)
@@ -70,7 +70,7 @@ collide_function:
 #     // Compare dot product (squared) with product of lengths (squared)
 #     return dotProduct * dotProduct == dot(expected, expected) * dot(ray, ray);
 # }
-    jr
+    jr $ra
 
 left_function:
 # vector left(vector v)
@@ -85,7 +85,7 @@ left_function:
 #     // Return the struct
 #     return leftTurn;
 # }
-    jr
+    jr $ra
 
 right_function:
 # vector right(vector v)
@@ -100,7 +100,7 @@ right_function:
 #     // Return the struct
 #     return rightTurn;
 # }
-    jr
+    jr $ra
 
 manhattan_length_function:
 # int manhattan_length(vector v)
@@ -111,14 +111,14 @@ manhattan_length_function:
 #     if (y < 0) y = -y;
 #     return x + y;
 # }
-    jr
+    jr $ra
 
 square_length_function:
 # int square_length(vector v)
 # {
 #     return dot(v, v);
 # }
-    jr
+    jr $ra
 
 direction_function:
 # char* direction(vector rotation)
@@ -130,4 +130,4 @@ direction_function:
 #
 #     return "";
 # }
-    jr
+    jr $ra
