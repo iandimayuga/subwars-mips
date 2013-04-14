@@ -100,7 +100,7 @@ void alert_motion(submarine sub, submarine enemy)
     if (enemy.move || enemy.turn)
     {
         // subtract player position from enemy position for direction to enemy
-        vector ray = add(enemy.position, mult(sub.position, -1));
+        vector ray = subtract(enemy.position, sub.position);
 
         // compare direction to enemy with current rotation
         int prod = dot(ray, sub.rotation);
@@ -135,7 +135,7 @@ void alert_fire(submarine sub, submarine enemy)
     if (enemy.fire)
     {
         // subtract player position from enemy position for direction to enemy
-        vector ray = add(enemy.position, mult(sub.position, -1));
+        vector ray = subtract(enemy.position, sub.position);
 
         // compare direction to enemy with current rotation
         int prod = dot(ray, sub.rotation);

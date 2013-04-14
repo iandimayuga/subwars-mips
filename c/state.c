@@ -37,8 +37,7 @@ void sub_move(submarine* sub, bool dir) {
     if (dir) {
 	resultant = add(sub->position, sub->rotation);
     } else {
-        vector rotation = mult(sub->rotation, -1);
-        resultant = add(sub->position, rotation);
+        resultant = subtract(sub->position, sub->rotation);
     }
 
     // Check boundaries
@@ -65,7 +64,7 @@ void check_collision(submarine* A, submarine* B)
         // check to see if they may have passed through each other (if they have both moved and are facing away from each other)
 
         // subtract B from A
-        vector displacement = add(A->position, mult(B->position, -1));
+        vector displacement = subtract(A->position, B->position);
 
         if (equals(A->rotation, displacement) && equals(B->rotation, mult(displacement, -1)))
         {

@@ -19,6 +19,11 @@ vector add(vector v0, vector v1)
     return sum;
 }
 
+vector subtract(vector v0, vector v1)
+{
+    return add(v0, mult(v1, -1));
+}
+
 vector mult(vector v, int s)
 {
     // Allocate the resultant struct
@@ -52,7 +57,7 @@ int dot(vector v0, vector v1)
 bool collide(vector initial, vector ray, vector target)
 {
     // Subtract initial from target to get expected ray
-    vector expected = add(target, mult(initial, -1));
+    vector expected = subtract(target, initial);
 
     // Dot expected ray with actual ray
     int dotProduct = dot(expected, ray);

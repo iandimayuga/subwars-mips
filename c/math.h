@@ -16,6 +16,9 @@ typedef struct vector {
 // vector addition
 vector add(vector v0, vector v1);
 
+// vector subtraction (v0 - v1)
+vector subtract(vector v0, vector v1);
+
 // vector-scalar multiplication
 vector mult(vector v, int s);
 
