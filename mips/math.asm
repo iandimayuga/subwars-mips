@@ -1,19 +1,11 @@
 # math.asm
 # Vector Math and other mathematical utilities
 
-add_function:
-# vector add(vector v0, vector v1)
-# {
-#     // Allocate the resultant struct
-#     vector sum;
-#
-#     // Add the components
-#     sum.x = v0.x + v1.x;
-#     sum.y = v0.y + v1.y;
-#
-#     // Return the struct
-#     return sum;
-# }
+.text
+
+add_function: # a0,a1 -> first vector, a2,a3 -> second vector, v0,v1 -> return vector
+    add $v0, $a0, $a2 # result.x = first.x + second.x
+    add $v1, $a1, $a3 # result.y = first.y + second.y
     jr $ra
 
 subtract_function:
