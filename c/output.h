@@ -49,7 +49,7 @@ void notify_victor(submarine A, submarine B);
 #define FIRE_BEHIND_ALERT "Torpedo launch detected originating behind us!\n"
 #define FIRE_TOWARD_ALERT "Sonar has confirmed torpedo was launched toward us but missed!\n"
 #define FIRE_AWAY_ALERT "It was launched in entirely the wrong direction!\n"
-#define BOUNDS_ALERT "Our orders prevent us from moving forward. We must turn!\n"
+#define BOUNDS_ALERT "Our orders prohibit us from moving that way. We must go a different way!\n"
 
 #define ENDGAME_NOTIFY "ENDGAME\n\n"
 #define COLLIDE_NOTIFY "Both subs have collided!!\n"
