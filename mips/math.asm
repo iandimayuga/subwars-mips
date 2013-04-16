@@ -3,39 +3,38 @@
 
 .text
 
-add_function: # a0,a1 -> first vector, a2,a3 -> second vector, v0,v1 -> return vector
+# vector addition
+add_function: # a0,a1 = first vector; a2,a3 = second vector; v0,v1 = return vector
     add $v0, $a0, $a2 # result.x = first.x + second.x
     add $v1, $a1, $a3 # result.y = first.y + second.y
     jr $ra
 
-subtract_function:
-# vector subtract(vector v0, vector v1)
-# {
-#     return add(v0, mult(v1, -1));
-# }
+# vector subtraction (first - second)
+subtract_function: # a0,a1 = first vector; a2,a3 = second vector; v0,v1 = return vector
+    sub $v0, $a0, $a2 # result.x = first.x - second.x
+    sub $v1, $a1, $a3 # result.y = first.y - second.y
     jr $ra
 
-mult_function:
-# vector mult(vector v, int s)
-# {
-#     // Allocate the resultant struct
-#     vector product;
-#
-#     // Multiply components by scalar
-#     product.x = v.x * s;
-#     product.y = v.y * s;
-#
-#     // Return the struct
-#     return product;
-# }
+# vector-scalar multiplication
+mult_function: # a0,a1 = vector; a2 = scalar; v0,v1 = return vector
+    mult $v0, $a0, $a2 # result.x = vector.x * scalar
+    mult $v1, $a1, $a2 # result.y = vector.y * scalar
     jr $ra
 
-equals_function:
-# bool equals(vector v0, vector v1)
-# {
-#     return v0.x == v1.x && v0.y == v1.y;
-# }
+# vector equality
+equals_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return boolean
+    add $v0, $zero, $zero # equal = false
 
+    bne $a0, $a2, equals_function_return # if first.x != second.x return 0
+    bne $a1, $a3, equals_function_return # if first.y != second.y return 0
+
+    addi $v0, $v0, 1 # equal = true
+
+    equals_function_return:
+        jr $ra
+
+# dot product
+dot_function:
 # int dot(vector v0, vector v1)
 # {
 #     // Allocate the resultant int
