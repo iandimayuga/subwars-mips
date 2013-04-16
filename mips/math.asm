@@ -107,34 +107,16 @@ collide_function: # a0 -> initial vector; a1 -> ray vector; a2 -> target vector,
         addi $sp, $sp, 28 # pop stack frame
         jr $ra
 
-left_function:
-# vector left(vector v)
-# {
-#     // Allocate the resultant struct
-#     vector leftTurn;
-#
-#     // Assign rotated values
-#     leftTurn.x = -v.y;
-#     leftTurn.y = v.x;
-#
-#     // Return the struct
-#     return leftTurn;
-# }
+# 90-degree counter-clockwise rotation
+left_function: # a0,a1 = vector; v0,v1 = return vector
+    sub $v0, $zero, $a1 # x = -y
+    add $v1, $zero, $a0 # y = x
     jr $ra
 
-right_function:
-# vector right(vector v)
-# {
-#     // Allocate the resultant struct
-#     vector rightTurn;
-#
-#     // Assign rotated values
-#     rightTurn.x = v.y;
-#     rightTurn.y = -v.x;
-#
-#     // Return the struct
-#     return rightTurn;
-# }
+# 90-degree clockwise rotation
+right_function: # a0,a1 = vector; v0,v1 = return vector
+    add $v0, $zero, $a1 # x = y
+    sub $v1, $zero, $a0 # y = -x
     jr $ra
 
 # length of vector measured along axes (x + y)
