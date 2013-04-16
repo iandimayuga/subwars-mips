@@ -64,7 +64,7 @@ bool collide(vector initial, vector ray, vector target)
 
     // If product is equal to the product of lengths, vectors are parallel
     // Compare dot product (squared) with product of lengths (squared)
-    return dotProduct * dotProduct == dot(expected, expected) * dot(ray, ray);
+    return dotProduct * dotProduct == square_length(expected) * square_length(ray);
 }
 
 vector left(vector v)
