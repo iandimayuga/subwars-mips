@@ -35,9 +35,9 @@ equals_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return bool
 
 # dot product
 dot_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return scalar
-    mult $v0, $a0, $a2 # addend = first.x * second.x
-    mult $t0, $a1, $a3 # addend = first.y * second.y
-    add $v0, $v0, $t0 # product = addend + addend
+    mult $v0, $a0, $a2 # addend0 = first.x * second.x
+    mult $t0, $a1, $a3 # addend1 = first.y * second.y
+    add $v0, $v0, $t0 # product = addend0 + addend1
     jr $ra
 
 # raytrace collision
@@ -137,6 +137,7 @@ right_function:
 # }
     jr $ra
 
+# length of vector measured along axes (x + y)
 manhattan_length_function:
 # int manhattan_length(vector v)
 # {
@@ -148,11 +149,11 @@ manhattan_length_function:
 # }
     jr $ra
 
-square_length_function:
-# int square_length(vector v)
-# {
-#     return dot(v, v);
-# }
+# squared length of vector
+square_length_function: # a0,a1 = vector; v0 = return scalar
+    mult $v0, $a0, $a0 # addend0 = vector.x * vector.x
+    mult $t0, $a1, $a1 # addend1 = vector.y * vector.y
+    add $v0, $v0, $t0 # product = addend0 + addend1
     jr $ra
 
 direction_function:
