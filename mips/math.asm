@@ -34,18 +34,10 @@ equals_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return bool
         jr $ra
 
 # dot product
-dot_function:
-# int dot(vector v0, vector v1)
-# {
-#     // Allocate the resultant int
-#     int dotProduct;
-#
-#     // Multiply the components and add
-#     dotProduct = v0.x * v1.x + v0.y * v1.y;
-#
-#     // Return the int
-#     return dotProduct;
-# }
+dot_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return scalar
+    mult $v0, $a0, $a2 # addend = first.x * second.x
+    mult $t0, $a1, $a3 # addend = first.y * second.y
+    add $v0, $v0, $t0 # product = addend + addend
     jr $ra
 
 collide_function:
