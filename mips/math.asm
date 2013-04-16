@@ -138,16 +138,19 @@ right_function:
     jr $ra
 
 # length of vector measured along axes (x + y)
-manhattan_length_function:
-# int manhattan_length(vector v)
-# {
-#     int x = v.x;
-#     int y = v.y;
-#     if (x < 0) x = -x;
-#     if (y < 0) y = -y;
-#     return x + y;
-# }
-    jr $ra
+manhattan_length_function: # a0,a1 = vector; v0 = return scalar
+    slt $t0, $a0, $zero # check if v.x < 0
+    beq $t0, $zero, manhattan_length_function_check_y
+    sub $a0, $zero, $a0 # negate v.x
+
+    manhattan_length_function_check_y:
+        slt $t0, $a1, $zero # check if v.y < 0
+        beq $t0, $zero, manhattan_length_function_return
+        sub $a1, $zero, $a1 # negate v.y
+
+    manhattan_length_function_return:
+        add $v0, $a0, $a1
+        jr $ra
 
 # squared length of vector
 square_length_function: # a0,a1 = vector; v0 = return scalar
