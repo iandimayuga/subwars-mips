@@ -17,8 +17,8 @@ subtract_function: # a0,a1 = first vector; a2,a3 = second vector; v0,v1 = return
 
 # vector-scalar multiplication
 mult_function: # a0,a1 = vector; a2 = scalar; v0,v1 = return vector
-    mult $v0, $a0, $a2 # result.x = vector.x * scalar
-    mult $v1, $a1, $a2 # result.y = vector.y * scalar
+    mul $v0, $a0, $a2 # result.x = vector.x * scalar
+    mul $v1, $a1, $a2 # result.y = vector.y * scalar
     jr $ra
 
 # vector equality
@@ -35,8 +35,8 @@ equals_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return bool
 
 # dot product
 dot_function: # a0,a1 = first vector; a2,a3 = second vector; v0 = return scalar
-    mult $v0, $a0, $a2 # addend0 = first.x * second.x
-    mult $t0, $a1, $a3 # addend1 = first.y * second.y
+    mul $v0, $a0, $a2 # addend0 = first.x * second.x
+    mul $t0, $a1, $a3 # addend1 = first.y * second.y
     add $v0, $v0, $t0 # product = addend0 + addend1
     jr $ra
 
@@ -79,7 +79,7 @@ collide_function: # a0 -> initial vector; a1 -> ray vector; a2 -> target vector,
 
     # if dot product is equal to the product of the lengths, vectors are parallel
     # compare dot product (squared) with product of lengths (squared)
-    mult $s4, $v0, $v0 # dot product squared
+    mul $s4, $v0, $v0 # dot product squared
 
     add $a0, $s0, $zero # vector = expected ray
     add $a1, $s1, $zero
@@ -89,7 +89,7 @@ collide_function: # a0 -> initial vector; a1 -> ray vector; a2 -> target vector,
     add $a0, $s2, $zero # vector = ray
     add $a1, $s3, $zero
     jal square_length_function # v0 = return scalar
-    mult $s5, $s5, $v0 # expected length squared * ray length squared
+    mul $s5, $s5, $v0 # expected length squared * ray length squared
 
     # condition check
     add $v0, $zero, $zero # collide = false
@@ -154,8 +154,8 @@ manhattan_length_function: # a0,a1 = vector; v0 = return scalar
 
 # squared length of vector
 square_length_function: # a0,a1 = vector; v0 = return scalar
-    mult $v0, $a0, $a0 # addend0 = vector.x * vector.x
-    mult $t0, $a1, $a1 # addend1 = vector.y * vector.y
+    mul $v0, $a0, $a0 # addend0 = vector.x * vector.x
+    mul $t0, $a1, $a1 # addend1 = vector.y * vector.y
     add $v0, $v0, $t0 # product = addend0 + addend1
     jr $ra
 
