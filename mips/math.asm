@@ -1,5 +1,17 @@
 # math.asm
 # Vector Math and other mathematical utilities
+.data
+
+directionless_string:
+    .asciiz "no direction"
+east_string:
+    .asciiz "east"
+north_string:
+    .asciiz "north"
+west_string:
+    .asciiz "west"
+south_string:
+    .asciiz "south"
 
 .text
 
@@ -141,14 +153,25 @@ square_length_function: # a0,a1 = vector; v0 = return scalar
     add $v0, $v0, $t0 # product = addend0 + addend1
     jr $ra
 
-direction_function:
-# char* direction(vector rotation)
-# {
-#     if (rotation.y > 0) return "north";
-#     if (rotation.y < 0) return "south";
-#     if (rotation.x > 0) return "east";
-#     if (rotation.x < 0) return "west";
-#
-#     return "";
-# }
-    jr $ra
+# cardinal direction names
+direction_function: # a0,a1 = rotation vector; v0 -> return string
+    la $v0, east_string
+    slt $t0, $zero, $a0 # x > 0
+    bne $t0, $zero, direction_function_return
+
+    la $v0, north_string
+    slt $t0, $zero, $a1 # y > 0
+    bne $t0, $zero, direction_function_return
+
+    la $v0, west_string
+    slt $t0, $a0, $zero # x < 0
+    bne $t0, $zero, direction_function_return
+
+    la $v0, south_string
+    slt $t0, $a1, $zero # y < 0
+    bne $t0, $zero, direction_function_return
+
+    la $v0, directionless_string
+
+    direction_function_return:
+        jr $ra
