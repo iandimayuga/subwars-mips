@@ -137,10 +137,12 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     #     if (A->collide || B->collide) A->alive = B->alive = false;
     # }
 
-    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    addi $sp, $sp, -12 # allocate 5 words on stack: ra, s0-3
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    sw $s3, 16($sp)
 
     # save sub pointers to s registers
     add $s0, $a0, $zero
@@ -165,6 +167,65 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     # if either has not moved, they can't have passed through each other
     beq $t0, $zero, check_collision_function_return
 
+    # find the target displacement for a collision
+    lw $a0, 8($s0) # A->position.x
+    lw $a1, 12($s0) # A->position.y
+    lw $a2, 8($s1) # B->position.x
+    lw $a3, 12($s1) # B->position.y
+    jal subtract_function
+
+    add $s2, $v0, $zero # displacement.x
+    add $s3, $v1, $zero # displacement.y
+
+    # determine A's motion direction
+    lw $a0, 16($s0) # A->rotation.x
+    lw $a1, 20($s0) # A->rotation.y
+
+    # check if A moved backwards
+    lw $t0, 28($s0) # A->reverse
+    beq $t0, $zero, check_collision_function_A
+
+    # A reversed, so reflect that in its motion vector
+    addi $a2, $zero, -1
+    jal mult_function
+
+    add $a0, $v0, $zero # motionA.x
+    add $a1, $v1, $zero # motionA.y
+
+    check_collision_function_A:
+        # check if A's motion originated from B's current position
+        add $a2, $s2, $zero # displacement.x
+        add $a3, $s3, $zero # displacement.y
+        jal equals_function
+
+        # if it did not, then there was no collision
+        beq $v0, $zero, check_collision_function_return
+
+    # determine B's motion direction
+    lw $a0, 16($s1) # B->rotation.x
+    lw $a1, 20($s1) # B->rotation.y
+
+    # check if B moved forwards
+    lw $t0, 28($s1) # B->reverse
+    bne $t0, $zero, check_collision_function_B
+
+    # B did not reverse,
+    # but we must reverse its motion vector because B's target displacement is in the other direction
+    addi $a2, $zero, -1
+    jal mult_function
+
+    add $a0, $v0, $zero # motionB.x
+    add $a1, $v1, $zero # motionB.y
+
+    check_collision_function_B:
+        # check if B's motion originated from A's current position
+        add $a2, $s2, $zero # displacement.x
+        add $a3, $s3, $zero # displacement.y
+        jal equals_function
+
+        # if it did not, then there was no collision
+        beq $v0, $zero, check_collision_function_return
+
     check_collision_function_true:
         addi $t0, $zero, 1
         sw $t0, 48($s0) # A->collide = true
@@ -176,6 +237,8 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
         lw $ra, 0($sp)
         lw $s0, 4($sp)
         lw $s1, 8($sp)
+        lw $s2, 12($sp)
+        lw $s3, 16($sp)
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
