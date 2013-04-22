@@ -8,9 +8,9 @@
 #include "math.h"
 
 #define MAP_BOTTOM 0
-#define MAP_TOP 9
+#define MAP_TOP 7
 #define MAP_LEFT 0
-#define MAP_RIGHT 9
+#define MAP_RIGHT 7
 
 // Submarine state structure (21 bytes, or 44 if bools take up a full word)
 typedef struct submarine {
