@@ -105,7 +105,8 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-check_collision_function:
+# Check if collision has occurred between submarines and sink them if necessary
+check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     # void check_collision(submarine* A, submarine* B)
     # {
     #     if (equals(A->position, B->position)) {
@@ -117,7 +118,15 @@ check_collision_function:
     #         // subtract B from A
     #         vector displacement = subtract(A->position, B->position);
     #
-    #         if (equals(A->rotation, displacement) && equals(B->rotation, mult(displacement, -1)))
+    #         // get the motion vectors for each sub
+    #         vector moveA = A->rotation;
+    #         vector moveB = B->rotation;
+    #
+    #         // reverse motion vectors if necessary
+    #         if (A->reverse) moveA = mult(moveA, -1);
+    #         if (B->reverse) moveB = mult(moveB, -1);
+    #
+    #         if (equals(moveA, displacement) && equals(moveB, mult(displacement, -1)))
     #         {
     #             // A and B passed through each other this turn
     #             A->collide = B->collide = true;
@@ -127,7 +136,48 @@ check_collision_function:
     #     // Any collision results in death of both parties
     #     if (A->collide || B->collide) A->alive = B->alive = false;
     # }
-    jr $ra
+
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+
+    # save sub pointers to s registers
+    add $s0, $a0, $zero
+    add $s1, $a1, $zero
+
+    # check to see if they occupy the same position in space
+    lw $a0, 8($s0) # A->position.x
+    lw $a1, 12($s0) # A->position.y
+    lw $a2, 8($s1) # B->position.x
+    lw $a3, 12($s1) # B->position.y
+    jal equals_function
+
+    # if positions are equal, there is a collision
+    bne $v0, $zero, check_collision_function_true
+
+    # check to see if they pass through each other
+    # (i.e. they have both moved and are facing away from each other)
+    lw $t0, 24($s0) # A->move
+    lw $t1, 24($s1) # B->move
+    and $t0, $t0, $t1
+
+    # if either has not moved, they can't have passed through each other
+    beq $t0, $zero, check_collision_function_return
+
+    check_collision_function_true:
+        addi $t0, $zero, 1
+        sw $t0, 48($s0) # A->collide = true
+        sw $t0, 48($s1) # B->collide = true
+        sw $zero, 52($s0) # A->alive = false
+        sw $zero, 52($s0) # B->alive = false
+
+    check_collision_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 sub_fire_function:
     # void sub_fire(submarine* sub, submarine* target){
