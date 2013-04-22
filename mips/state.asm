@@ -23,14 +23,13 @@ submarine_2_prototype:
 
 .text
 
-reset_flags_function:
-    # void reset_flags(submarine* sub) {
-    #     sub->move = false;
-    #     sub->turn = false;
-    #     sub->ping = false;
-    #     sub->fire = false;
-    #     sub->bounds = false;
-    # }
+# Set phase-specific flags back to zero in preparation for the next command evaluation
+reset_flags_function: # a0 -> submarine struct
+    sw $zero, 24($a0) # move = false
+    sw $zero, 28($a0) # turn = false
+    sw $zero, 32($a0) # ping = false
+    sw $zero, 36($a0) # fire = false
+    sw $zero, 40($a0) # bounds = false
     jr $ra
 
 sub_move_function:
