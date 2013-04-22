@@ -18,6 +18,7 @@ typedef struct submarine {
     vector position; // 8 bytes
     vector rotation; // 8 bytes
     bool move; // 1 byte, did the sub move
+    bool reverse; // 1 byte, did the sub attempt to move backwards
     bool turn; // 1 byte, did the sub turn
     bool ping; // 1 byte
     bool fire; // 1 byte, did the sub fire last turn

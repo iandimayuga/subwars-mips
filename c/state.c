@@ -25,6 +25,7 @@ void create_subs(submarine* A, submarine* B) {
 
 void reset_flags(submarine* sub) {
     sub->move = false;
+    sub->reverse = false;
     sub->turn = false;
     sub->ping = false;
     sub->fire = false;
@@ -38,6 +39,7 @@ void sub_move(submarine* sub, bool dir) {
 	resultant = add(sub->position, sub->rotation);
     } else {
         resultant = subtract(sub->position, sub->rotation);
+        sub->reverse = true;
     }
 
     // Check boundaries
@@ -66,7 +68,15 @@ void check_collision(submarine* A, submarine* B)
         // subtract B from A
         vector displacement = subtract(A->position, B->position);
 
-        if (equals(A->rotation, displacement) && equals(B->rotation, mult(displacement, -1)))
+        // get the motion vectors for each sub
+        vector moveA = A->rotation;
+        vector moveB = B->rotation;
+
+        // reverse motion vectors if necessary
+        if (A->reverse) moveA = mult(moveA, -1);
+        if (B->reverse) moveB = mult(moveB, -1);
+
+        if (equals(moveA, displacement) && equals(moveB, mult(displacement, -1)))
         {
             // A and B passed through each other this turn
             A->collide = B->collide = true;
