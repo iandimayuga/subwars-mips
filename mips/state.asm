@@ -2,34 +2,36 @@
 # Submarine state and knowledge
 
 .data
-# Submarine state structure (52 bytes)
-# 0:    (4) int size = 52
+# Submarine state structure (56 bytes)
+# 0:    (4) int size = 56
 # 4:    (4) int player
 # 8:    (8) vector position
 # 16:   (8) vector rotation
 # 24:   (4) flag move
-# 28:   (4) flag turn
-# 32:   (4) flag ping
-# 36:   (4) flag fire
-# 40:   (4) flag bounds
-# 44:   (4) flag collide
-# 48:   (4) flag alive
+# 28:   (4) flag reverse
+# 32:   (4) flag turn
+# 36:   (4) flag ping
+# 40:   (4) flag fire
+# 44:   (4) flag bounds
+# 48:   (4) flag collide
+# 52:   (4) flag alive
 
 submarine_1_prototype:
-    .word   52, 1, 0,0, 1,0, 0, 0, 0, 0, 0, 0, 1
+    .word   52, 1, 0,0, 1,0, 0, 0, 0, 0, 0, 0, 0, 1
 
 submarine_2_prototype:
-    .word   52, 2, 7,7, -1,0, 0, 0, 0, 0, 0, 0, 1
+    .word   52, 2, 7,7, -1,0, 0, 0, 0, 0, 0, 0, 0, 1
 
 .text
 
 # Set phase-specific flags back to zero in preparation for the next command evaluation
 reset_flags_function: # a0 -> submarine struct
     sw $zero, 24($a0) # move = false
-    sw $zero, 28($a0) # turn = false
-    sw $zero, 32($a0) # ping = false
-    sw $zero, 36($a0) # fire = false
-    sw $zero, 40($a0) # bounds = false
+    sw $zero, 28($a0) # reverse = false
+    sw $zero, 32($a0) # turn = false
+    sw $zero, 36($a0) # ping = false
+    sw $zero, 40($a0) # fire = false
+    sw $zero, 44($a0) # bounds = false
     jr $ra
 
 # Move the sub forwards or backwards
@@ -57,6 +59,10 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
     j sub_move_function_resultant
 
     sub_move_function_backward:
+        # set sub's reverse flag
+        addi $t0, $zero, 1
+        sw $t0, 28($s0) # reverse
+
         # subtract the vectors to move backward
         jal subtract_function
 
@@ -80,12 +86,17 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
         # set sub's position to valid resultant
         sw $t0, 8($s0) # position.x
         sw $t1, 12($s0) # position.y
+
+        # set sub's move flag
+        addi $t0, $zero, 1
+        sw $t0, 24($s0) # move
+
         j sub_move_function_return
 
     sub_move_function_outbounds:
         # set sub's bounds flag to true and do not change position
         addi $t0, $zero, 1
-        sw $t0, 40($s0) # bounds
+        sw $t0, 44($s0) # bounds
 
     sub_move_function_return:
         lw $ra, 0($sp)
