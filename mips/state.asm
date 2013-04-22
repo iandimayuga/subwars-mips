@@ -32,31 +32,67 @@ reset_flags_function: # a0 -> submarine struct
     sw $zero, 40($a0) # bounds = false
     jr $ra
 
-sub_move_function:
-    # void sub_move(submarine* sub, bool dir) {
-    #     // Determine direction
-    #     vector resultant = {0, 0};
-    #     if (dir) {
-    # 	resultant = add(sub->position, sub->rotation);
-    #     } else {
-    #         resultant = subtract(sub->position, sub->rotation);
-    #     }
-    # 
-    #     // Check boundaries
-    #     if (resultant.x >= MAP_LEFT &&
-    #         resultant.x <= MAP_RIGHT &&
-    #         resultant.y >= MAP_BOTTOM &&
-    #         resultant.y <= MAP_TOP)
-    #     {
-    #         // Move if sub would stay in-bounds
-    #         sub->move = true;
-    #         sub->position = resultant;
-    #     } else {
-    #         // Notify otherwise, but do not move
-    #         sub->bounds = true;
-    #     }
-    # }
-    jr $ra
+# Move the sub forwards or backwards
+sub_move_function: # a0 -> submarine struct; a1 = forward boolean
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+
+    # save parameters to s registers
+    add $s0, $a0, $zero
+    add $s1, $a1, $zero
+
+    # find resultant vector of motion
+    lw $a0, 8($s0) # position.x
+    lw $a1, 12($s0) # position.y
+    lw $a2, 16($s0) # rotation.x
+    lw $a3, 20($s0) # rotation.y
+
+    # check direction
+    beq $s1, $zero, sub_move_function_backward
+
+    # add the vectors to move forward
+    jal add_function
+    j sub_move_function_resultant
+
+    sub_move_function_backward:
+        # subtract the vectors to move backward
+        jal subtract_function
+
+    sub_move_function_resultant:
+        # save resultant and move to bounds check
+        add $t0, $v0, $zero # resultant.x
+        add $t1, $v1, $zero # resultant.y
+        j sub_move_function_boundscheck
+
+    sub_move_function_boundscheck:
+        # ensure sub stays within bounds
+        slti $t2, $t0, 0 # check if x < 0
+        bne $t2, $zero, sub_move_function_outbounds
+        slti $t2, $t0, 8 # check if x < 8
+        beq $t2, $zero, sub_move_function_outbounds
+        slti $t2, $t1, 0 # check if y < 0
+        bne $t2, $zero, sub_move_function_outbounds
+        slti $t2, $t1, 8 # check if y < 8
+        beq $t2, $zero, sub_move_function_outbounds
+
+        # set sub's position to valid resultant
+        sw $t0, 8($s0) # position.x
+        sw $t1, 12($s0) # position.y
+        j sub_move_function_return
+
+    sub_move_function_outbounds:
+        # set sub's bounds flag to true and do not change position
+        addi $t0, $zero, 1
+        sw $t0, 40($s0) # bounds
+
+    sub_move_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 check_collision_function:
     # void check_collision(submarine* A, submarine* B)
@@ -66,17 +102,17 @@ check_collision_function:
     #         A->collide = B->collide = true;
     #     } else if (A->move && B->move) {
     #         // check to see if they may have passed through each other (if they have both moved and are facing away from each other)
-    # 
+    #
     #         // subtract B from A
     #         vector displacement = subtract(A->position, B->position);
-    # 
+    #
     #         if (equals(A->rotation, displacement) && equals(B->rotation, mult(displacement, -1)))
     #         {
     #             // A and B passed through each other this turn
     #             A->collide = B->collide = true;
     #         }
     #     }
-    # 
+    #
     #     // Any collision results in death of both parties
     #     if (A->collide || B->collide) A->alive = B->alive = false;
     # }
