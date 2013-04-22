@@ -1,19 +1,25 @@
 # state.asm
 # Submarine state and knowledge
 
-# // Submarine state structure (21 bytes, or 44 if bools take up a full word)
-# typedef struct submarine {
-#     int player;
-#     vector position; // 8 bytes
-#     vector rotation; // 8 bytes
-#     bool move; // 1 byte, did the sub move
-#     bool turn; // 1 byte, did the sub turn
-#     bool ping; // 1 byte
-#     bool fire; // 1 byte, did the sub fire last turn
-#     bool bounds; // 1 byte, did the sub attempt to leave the bounds of the map
-#     bool collide; // 1 byte, have the subs collided
-#     bool alive; // 1 byte
-# } submarine;
+.data
+# Submarine state structure (52 bytes)
+# 0:    (4) int size = 52
+# 4:    (4) int player
+# 8:    (8) vector position
+# 16:   (8) vector rotation
+# 24:   (4) flag move
+# 28:   (4) flag turn
+# 32:   (4) flag ping
+# 36:   (4) flag fire
+# 40:   (4) flag bounds
+# 44:   (4) flag collide
+# 48:   (4) flag alive
+
+submarine_1_prototype:
+    .word   52, 1, 0,0, 1,0, 0, 0, 0, 0, 0, 0, 1
+
+submarine_2_prototype:
+    .word   52, 2, 7,7, -1,0, 0, 0, 0, 0, 0, 0, 1
 
 .text
 
