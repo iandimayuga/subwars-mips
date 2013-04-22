@@ -23,27 +23,6 @@ submarine_2_prototype:
 
 .text
 
-create_subs_function:
-    # //this assumes that subs are created in main and passed here to get initialized
-    # void create_subs(submarine* A, submarine* B) {
-    #     vector botLeft = {MAP_LEFT, MAP_BOTTOM};
-    #     vector topRight = {MAP_RIGHT, MAP_TOP};
-    #     vector right = {1, 0};
-    #     vector left = {-1, 0};
-    #     A->player = 1;
-    #     B->player = 2;
-    #     A->position = botLeft;
-    #     A->rotation = right;
-    #     B->position = topRight;
-    #     B->rotation = left;
-    # 
-    #     reset_flags(A);
-    #     reset_flags(B);
-    # 
-    #     A->alive = B->alive = true;
-    # }
-    jr $ra
-
 reset_flags_function:
     # void reset_flags(submarine* sub) {
     #     sub->move = false;
