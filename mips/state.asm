@@ -83,15 +83,15 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
         slti $t2, $t1, 8 # check if y < 8
         beq $t2, $zero, sub_move_function_outbounds
 
-        # set sub's position to valid resultant
-        sw $t0, 8($s0) # position.x
-        sw $t1, 12($s0) # position.y
+    # set sub's position to valid resultant
+    sw $t0, 8($s0) # position.x
+    sw $t1, 12($s0) # position.y
 
-        # set sub's move flag
-        addi $t0, $zero, 1
-        sw $t0, 24($s0) # move
+    # set sub's move flag
+    addi $t0, $zero, 1
+    sw $t0, 24($s0) # move
 
-        j sub_move_function_return
+    j sub_move_function_return
 
     sub_move_function_outbounds:
         # set sub's bounds flag to true and do not change position
