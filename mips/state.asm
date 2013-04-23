@@ -308,26 +308,55 @@ sub_ping_function: # a0 -> submarine struct
     sw $t0, 36($a0) # ping flag
     jr $ra
 
-evaluate_motion_function:
-    # void evaluate_motion(submarine* sub, int command)
-    # {
-    #     switch (command)
-    #     {
-    #         case 0:
-    #             sub_move(sub, true);
-    #             break;
-    #         case 1:
-    #             sub_move(sub, false);
-    #             break;
-    #         case 2:
-    #             sub_rotate_left(sub);
-    #             break;
-    #         case 3:
-    #             sub_rotate_right(sub);
-    #             break;
-    #     }
-    # }
-    jr $ra
+# evaluate motion commands
+evaluate_motion_function: # a0 -> submarine struct; a1 = command int
+    addi $sp, $sp, -4 # allocate 1 word on stack: ra
+    sw $ra, 0($sp)
+
+    # switch on the value of a1
+    addi $t0, $zero, 0
+    beq $a1, $t0, evaluate_motion_function_move
+    addi $t0, $zero, 1
+    beq $a1, $t0, evaluate_motion_function_reverse
+    addi $t0, $zero, 2
+    beq $a1, $t0, evaluate_motion_function_left
+    addi $t0, $zero, 3
+    beq $a1, $t0, evaluate_motion_function_right
+
+    j evaluate_motion_function_return
+
+    evaluate_motion_function_move:
+        # set forward parameter to true
+        addi $a1, $zero, 1
+
+        # call move function
+        jal sub_move_function
+
+        j evaluate_motion_function_return
+
+    evaluate_motion_function_reverse:
+        # set forward parameter to false
+        addi $a1, $zero, 0
+
+        # call move function
+        jal sub_move_function
+
+        j evaluate_motion_function_return
+
+    evaluate_motion_function_left:
+        # call rotate left function
+        jal sub_rotate_left_function
+
+        j evaluate_motion_function_return
+
+    evaluate_motion_function_right:
+        # call rotate right function
+        jal sub_rotate_right_function
+
+    evaluate_motion_function_return:
+        lw $ra, 0($sp)
+        addi $sp, $sp, 4 # pop stack frame
+        jr $ra
 
 evaluate_action_function:
     # void evaluate_action(submarine* sub, submarine* enemy, int command)
