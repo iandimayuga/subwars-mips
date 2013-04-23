@@ -301,10 +301,11 @@ sub_rotate_right_function: # a0 -> submarine struct
     addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
-sub_ping_function:
-    # void sub_ping(submarine* sub) {
-    #     sub->ping = true;
-    # }
+# set ping flag to true
+sub_ping_function: # a0 -> submarine struct
+    # set ping flag
+    addi $t0, $zero, 1
+    sw $t0, 36($a0) # ping flag
     jr $ra
 
 evaluate_motion_function:
