@@ -247,18 +247,57 @@ sub_fire_function: # a0 -> player submarine struct; a1 -> target submarine struc
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-sub_rotate_left_function:
-    # void sub_rotate_left(submarine* sub) {
-    #     sub->turn = true;
-    #     sub->rotation = left(sub->rotation);
-    # }
+# rotate sub 90 degrees counterclockwise
+sub_rotate_left_function: # a0 -> submarine struct
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+
+    # save submarine pointer to s register
+    add $s0, $a0, $zero
+
+    # pass rotation vector
+    lw $a0, 16($s0) # rotation.x
+    lw $a1, 20($s0) # rotation.y
+    jal left_function
+
+    # set turn flag
+    addi $t0, $zero, 1
+    sw $t0, 32($s0) # turn flag
+
+    # store new rotation vector
+    sw $v0, 16($s0) # rotation.x
+    sw $v1, 20($s0) # rotation.y
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
 sub_rotate_right_function:
-    # void sub_rotate_right(submarine* sub) {
-    #     sub->turn = true;
-    #     sub->rotation = right(sub->rotation);
-    # }
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+
+    # save submarine pointer to s register
+    add $s0, $a0, $zero
+
+    # pass rotation vector
+    lw $a0, 16($s0) # rotation.x
+    lw $a1, 20($s0) # rotation.y
+    jal right_function
+
+    # set turn flag
+    addi $t0, $zero, 1
+    sw $t0, 32($s0) # turn flag
+
+    # store new rotation vector
+    sw $v0, 16($s0) # rotation.x
+    sw $v1, 20($s0) # rotation.y
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
 sub_ping_function:
