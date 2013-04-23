@@ -114,25 +114,46 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     jr $ra
 
 generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
-# void generate_endgame(submarine A, submarine B)
-# {
-#     // clear the console for endgame
-#     printf(CONSOLE_CLEAR);
-#     printf(ENDGAME_NOTIFY);
-#
-#     // notify if either sub hit the other with a torpedo
-#     notify_hit(A, B);
-#
-#     // notify if either sub collided into the other
-#     notify_collide(A, B);
-#
-#     // show death positions and directions
-#     notify_death(A);
-#     notify_death(B);
-#
-#     // congratulate victor, if any
-#     notify_victor(A, B);
-# }
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s registers
+    add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # sub B
+
+    # clear the console for endgame
+    la $a0, console_clear_string
+    jal print_string_function
+    la $a0, endgame_notify_string
+    jal print_string_function
+
+    # notify if either sub hit the other with a torpedo
+    add $a0, $s0, $zero # sub A
+    add $a1, $s1, $zero # sub B
+    jal notify_hit_function
+
+    # notify if either sub collided into the other
+    add $a0, $s0, $zero # sub A
+    add $a1, $s1, $zero # sub B
+    jal notify_collide_function
+
+    # show death positions and directions
+    add $a0, $s0, $zero # sub A
+    jal notify_death_function
+    add $a0, $s1, $zero # sub B
+    jal notify_death_function
+
+    # congratulate victor, if any
+    add $a0, $s0, $zero # sub A
+    add $a1, $s1, $zero # sub B
+    jal notify_victor_function
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    addi $sp, $sp, 12 # pop stack frame
+    jr $ra
     jr $ra
 
 get_ready_function: # a0 -> submarine struct
