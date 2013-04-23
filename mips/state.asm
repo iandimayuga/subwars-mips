@@ -244,6 +244,7 @@ sub_fire_function: # a0 -> player submarine struct; a1 -> target submarine struc
         lw $ra, 0($sp)
         lw $s0, 4($sp)
         lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
 sub_rotate_left_function:
