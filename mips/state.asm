@@ -358,17 +358,30 @@ evaluate_motion_function: # a0 -> submarine struct; a1 = command int
         addi $sp, $sp, 4 # pop stack frame
         jr $ra
 
-evaluate_action_function:
-    # void evaluate_action(submarine* sub, submarine* enemy, int command)
-    # {
-    #     switch (command)
-    #     {
-    #         case 4:
-    #             sub_ping(sub);
-    #             break;
-    #         case 5:
-    #             sub_fire(sub, enemy);
-    #             break;
-    #     }
-    # }
-    jr $ra
+# evaluate submarine actions
+evaluate_action_function: # a0 -> submarine struct; a1 -> enemy submarine struct; a2 = command
+    addi $sp, $sp, -4 # allocate 1 word on stack: ra
+    sw $ra, 0($sp)
+
+    # switch on the value of a2
+    addi $t0, $zero, 4
+    beq $a2, $t0, evaluate_motion_function_ping
+    addi $t0, $zero, 5
+    beq $a2, $t0, evaluate_motion_function_fire
+
+    j evaluate_action_function_return
+
+    evaluate_action_function_ping:
+        # call ping function
+        jal sub_ping_function
+
+        j evaluate_action_function_return
+
+    evaluate_action_function_fire:
+        # call fire function
+        jal sub_fire_function
+
+    evaluate_action_function_return:
+        lw $ra, 0($sp)
+        addi $sp, $sp, 4 # pop stack frame
+        jr $ra
