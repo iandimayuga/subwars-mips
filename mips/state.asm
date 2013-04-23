@@ -137,7 +137,7 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     #     if (A->collide || B->collide) A->alive = B->alive = false;
     # }
 
-    addi $sp, $sp, -12 # allocate 5 words on stack: ra, s0-3
+    addi $sp, $sp, -20 # allocate 5 words on stack: ra, s0-3
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     sw $s1, 8($sp)
@@ -239,7 +239,7 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
         lw $s1, 8($sp)
         lw $s2, 12($sp)
         lw $s3, 16($sp)
-        addi $sp, $sp, 12 # pop stack frame
+        addi $sp, $sp, 20 # pop stack frame
         jr $ra
 
 sub_fire_function:
