@@ -212,14 +212,39 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
         addi $sp, $sp, 20 # pop stack frame
         jr $ra
 
-sub_fire_function:
-    # void sub_fire(submarine* sub, submarine* target){
-    #     sub->fire = true;
-    #     if (collide(sub->position, sub->rotation, target->position)) {
-    #         target->alive = false;
-    #     }
-    # }
-    jr $ra
+# fire the submarine's torpedo and check for hit, sinking target if necessary
+sub_fire_function: # a0 -> player submarine struct; a1 -> target submarine struct
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+
+    # save submarine pointers to s registers
+    add $s0, $a0, $zero
+    add $s1, $a1, $zero
+
+    # set sub->fire to true
+    addi $t0, $zero, 1
+    sw $t0, 40($s0) # fire flag
+
+    # raytrace check for torpedo hit
+    addi $a0, $s0, 8 # &(sub->position)
+    addi $a1, $s0, 16 # &(sub->rotation)
+    addi $a2, $s1, 8 # &(target->position)
+    jal collide_function
+
+    # if no collision, return
+    beq $v0, $zero, sub_fire_function_return
+
+    sub_fire_function_hit:
+        # set target's alive flag to false
+        sw $zero, 52($s1) # alive flag
+
+    sub_fire_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        jr $ra
 
 sub_rotate_left_function:
     # void sub_rotate_left(submarine* sub) {
