@@ -61,7 +61,7 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
     sub_move_function_backward:
         # set sub's reverse flag
         addi $t0, $zero, 1
-        sw $t0, 28($s0) # reverse
+        sw $t0, 28($s0) # reverse flag
 
         # subtract the vectors to move backward
         jal subtract_function
@@ -89,14 +89,14 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
 
     # set sub's move flag
     addi $t0, $zero, 1
-    sw $t0, 24($s0) # move
+    sw $t0, 24($s0) # move flag
 
     j sub_move_function_return
 
     sub_move_function_outbounds:
         # set sub's bounds flag to true and do not change position
         addi $t0, $zero, 1
-        sw $t0, 44($s0) # bounds
+        sw $t0, 44($s0) # bounds flag
 
     sub_move_function_return:
         lw $ra, 0($sp)
@@ -107,36 +107,6 @@ sub_move_function: # a0 -> submarine struct; a1 = forward boolean
 
 # Check if collision has occurred between submarines and sink them if necessary
 check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
-    # void check_collision(submarine* A, submarine* B)
-    # {
-    #     if (equals(A->position, B->position)) {
-    #         // A and B occupy the same point in space
-    #         A->collide = B->collide = true;
-    #     } else if (A->move && B->move) {
-    #         // check to see if they may have passed through each other (if they have both moved and are facing away from each other)
-    #
-    #         // subtract B from A
-    #         vector displacement = subtract(A->position, B->position);
-    #
-    #         // get the motion vectors for each sub
-    #         vector moveA = A->rotation;
-    #         vector moveB = B->rotation;
-    #
-    #         // reverse motion vectors if necessary
-    #         if (A->reverse) moveA = mult(moveA, -1);
-    #         if (B->reverse) moveB = mult(moveB, -1);
-    #
-    #         if (equals(moveA, displacement) && equals(moveB, mult(displacement, -1)))
-    #         {
-    #             // A and B passed through each other this turn
-    #             A->collide = B->collide = true;
-    #         }
-    #     }
-    #
-    #     // Any collision results in death of both parties
-    #     if (A->collide || B->collide) A->alive = B->alive = false;
-    # }
-
     addi $sp, $sp, -20 # allocate 5 words on stack: ra, s0-3
     sw $ra, 0($sp)
     sw $s0, 4($sp)
@@ -160,8 +130,8 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
 
     # check to see if they pass through each other
     # (i.e. they have both moved and are facing away from each other)
-    lw $t0, 24($s0) # A->move
-    lw $t1, 24($s1) # B->move
+    lw $t0, 24($s0) # A->move flag
+    lw $t1, 24($s1) # B->move flag
     and $t0, $t0, $t1
 
     # if either has not moved, they can't have passed through each other
@@ -182,7 +152,7 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     lw $a1, 20($s0) # A->rotation.y
 
     # check if A moved backwards
-    lw $t0, 28($s0) # A->reverse
+    lw $t0, 28($s0) # A->reverse flag
     beq $t0, $zero, check_collision_function_A
 
     # A reversed, so reflect that in its motion vector
@@ -206,7 +176,7 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
     lw $a1, 20($s1) # B->rotation.y
 
     # check if B moved forwards
-    lw $t0, 28($s1) # B->reverse
+    lw $t0, 28($s1) # B->reverse flag
     bne $t0, $zero, check_collision_function_B
 
     # B did not reverse,
