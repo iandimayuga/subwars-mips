@@ -73,7 +73,7 @@ draw_notify_string:
     .asciiz "\nThere was no victory this day.\n"
 
 console_clear_string:
-    .asciiz "\e[1;1H\e[2J"
+    .asciiz "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
 player_ready_string_0:
     .asciiz "PLAYER "
@@ -189,7 +189,8 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     jal alert_motion_function
 
     # alert if enemy pinged
-    add $a0, $s1, $zero # enemy sub
+    add $a0, $s0, $zero # player sub
+    add $a1, $s1, $zero # enemy sub
     jal alert_pingee_function
 
     # alert the results from own ping last phase
