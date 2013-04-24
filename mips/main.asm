@@ -15,7 +15,7 @@ main:
     la $a0, stalin_string
     jal print_string
     la $a0, enter_to_begin
-    jal enter_to_begin
+    jal print_string
 
     #I just chose to skip the loop here and wait for them to press enter
     li $v0, 8
@@ -65,7 +65,7 @@ main_loop:
     # not load in sub 2 and the action
     move $a0, $s1
     move $a1, $s3
-    jal evaluate_motion_funciton
+    jal evaluate_motion_function
 
     # check the sub collision
     move $a0, $s0
