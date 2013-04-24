@@ -37,8 +37,11 @@ draw_notify_string:
 
 console_clear_string:
     .asciiz "\e[1;1H\e[2J"
-player_ready_string:
-    .asciiz "PLAYER %d PRESS ENTER TO CONTINUE\n"
+
+player_ready_string_0:
+    .asciiz "PLAYER "
+player_ready_string_1:
+    .asciiz " PRESS ENTER TO CONTINUE\n"
 
 player_menu_string:
     .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n"
@@ -52,10 +55,50 @@ print_string_function: # a0 -> string to print
     syscall
     jr $ra
 
-print_integer_function: # a0 = integer to print
-    li $v0, 1
-    syscall
-    jr $ra
+# prints an alternation of strings and integers from the stack
+# each word in the stack frame is either a string pointer or an integer, starting with a string
+printf_function: # a0 = arglist size in bytes; sp -> first string address; sp + 4 -> first integer
+    add $t0, $sp, $zero # save stack pointer
+
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save start pointer
+    add $s0, $t0, $zero # current byte (original stack pointer)
+    # save arglist end pointer
+    add $s1, $s0, $a0 # start byte + arglist size
+
+    printf_function_loop:
+        # if we have reached the end, return
+        beq $s0, $s1, printf_function_return
+
+        lw $a0, 0($s0)
+        li $v0, 4 # print string
+        syscall
+
+        # increment current byte
+        addi $s0, $s0, 4
+
+        # if we have reached the end, return
+        beq $s0, $s1, printf_function_return
+
+        lw $a0, 0($s0)
+        li $v0, 1 # print integer
+        syscall
+
+        # increment current byte
+        addi $s0, $s0, 4
+
+        # loop
+        j printf_function_loop
+
+    printf_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
@@ -153,7 +196,6 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     lw $s0, 4($sp)
     lw $s1, 8($sp)
     addi $sp, $sp, 12 # pop stack frame
-    jr $ra
     jr $ra
 
 get_ready_function: # a0 -> submarine struct
