@@ -11,11 +11,11 @@ enter_to_begin:
 main:
     # clear the console and print the welcome screen
     la $a0, console_clear_string
-    jal print_string
+    jal print_string_function
     la $a0, stalin_string
-    jal print_string
+    jal print_string_function
     la $a0, enter_to_begin
-    jal print_string
+    jal print_string_function
 
     #I just chose to skip the loop here and wait for them to press enter
     li $v0, 8
@@ -53,16 +53,16 @@ main_loop:
     move $s3, $a0
     
     # reset the flags for sub 2 and then 1
-    # sub 2 already in a0
-    jal reset_flags_function
     move $a0, $s0
+    jal reset_flags_function
+    move $a0, $s1
     jal reset_flags_function
 
     # evaluate motion for both subs
-    # since sub 1 is already in a0, just put the action into a1
+    move $a0, $s0
     move $a1, $s2
     jal evaluate_motion_function
-    # not load in sub 2 and the action
+    # now load in sub 2 and the action
     move $a0, $s1
     move $a1, $s3
     jal evaluate_motion_function
@@ -73,7 +73,7 @@ main_loop:
     jal check_collision_function
 
     # evaluate action
-    # sub 1 is already in a0
+    move $a0, $s0
     move $a1, $s2
     jal evaluate_action_function
     # evaluate action for sub 2 and action
