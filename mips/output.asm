@@ -449,41 +449,86 @@ alert_pingee_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-alert_fire_function:
-# void alert_fire(submarine sub, submarine enemy)
-# {
-#     if (enemy.fire)
-#     {
-#         // subtract player position from enemy position for direction to enemy
-#         vector ray = subtract(enemy.position, sub.position);
-#
-#         // compare direction to enemy with current rotation
-#         int prod = dot(ray, sub.rotation);
-#
-#         // alert direction to enemy
-#         if (prod >= 0)
-#         {
-#             printf(FIRE_AHEAD_ALERT);
-#         } else {
-#             printf(FIRE_BEHIND_ALERT);
-#         }
-#
-#         // reverse ray to compare with torpedo launch
-#         ray = mult(ray, -1);
-#
-#         // compare direction from enemy to player against enemy rotation
-#         prod = dot(ray, enemy.rotation);
-#
-#         // alert if torpedo went toward or away from player
-#         if (prod > 0)
-#         {
-#             printf(FIRE_TOWARD_ALERT);
-#         } else {
-#             printf(FIRE_AWAY_ALERT);
-#         }
-#     }
-# }
-    jr $ra
+alert_fire_function: # a0 -> submarine struct; a1 -> enemy submarine struct
+    addi $sp, $sp, -20 # allocate 5 words on stack: ra, s0-3
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    sw $s3, 16($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # player sub
+    add $s1, $a1, $zero # enemy sub
+
+    # check if enemy fired
+    lw $t0, 40($s1) # enemy->fire flag
+    beq $t0, $zero, alert_fire_function_return
+
+    # find direction to enemy by subtracting player position from enemy position
+    lw $a0, 8($s1) # enemy->position.x
+    lw $a1, 12($s1) # enemy->position.y
+    lw $a2, 8($s0) # player->position.x
+    lw $a3, 12($s0) # player->position.y
+    jal subtract_function
+
+    # save ray
+    add $s2, $v0, $zero # ray.x
+    add $s3, $v1, $zero # ray.y
+
+    # compare current rotation with direction to enemy
+    add $a0, $s2, $zero # ray.x
+    add $a1, $s3, $zero # ray.y
+    lw $a2, 16($s0) # player->rotation.x
+    lw $a3, 20($s0) # player->rotation.y
+    jal dot_function
+
+    # if 0 < prod the torpedo originated ahead of the sub
+    slt $t0, $zero, $v0
+    beq $t0, $zero, alert_fire_function_behind
+
+    # torpedo originated ahead of the sub
+    la $a0, fire_ahead_alert_string
+    jal print_string_function
+    j alert_fire_function_torpedo
+
+    alert_fire_function_behind:
+        # torpedo originated behind sub
+        la $a0, fire_behind_alert_string
+        jal print_string_function
+
+    alert_fire_function_torpedo:
+    # detect what direction the torpedo was headed
+    # reverse the ray to compare with launch direction
+    sub $a0, $zero, $s2 # - ray.x
+    sub $a1, $zero, $s3 # - ray.y
+
+    # compare enemy rotation with direction towards player
+    lw $a2, 16($s1) # enemy->rotation.x
+    lw $a3, 20($s1) # enemy->rotation.y
+    jal dot_function
+
+    # if 0 < prod the torpedo was fired toward the player
+    slt $t0, $zero, $v0
+    beq $t0, $zero, alert_fire_function_behind
+
+    # torpedo fired toward player
+    la $a0, fire_toward_alert_string
+    jal print_string_function
+    j alert_fire_function_return
+
+    alert_fire_function_away:
+        # torpedo fired away from player
+        la $a0, fire_away_alert_string
+        jal print_string_function
+
+    alert_fire_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        lw $s2, 12($sp)
+        lw $s3, 16($sp)
+        addi $sp, $sp, 20 # pop stack frame
+        jr $ra
 
 notify_hit_function:
 # void notify_hit(submarine A, submarine B)
