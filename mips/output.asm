@@ -199,6 +199,9 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     add $a0, $s0, $zero # sub A
     add $a1, $s1, $zero # sub B
     jal notify_hit_function
+    add $a0, $s1, $zero # sub B
+    add $a1, $s0, $zero # sub A
+    jal notify_hit_function
 
     # notify if either sub collided into the other
     add $a0, $s0, $zero # sub A
@@ -534,28 +537,28 @@ alert_fire_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         addi $sp, $sp, 20 # pop stack frame
         jr $ra
 
-notify_hit_function: # a0 -> submarine struct; a1 -> submarine struct
+notify_hit_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     sw $s1, 8($sp)
     # save parameters to s register
-    add $s0, $a0, $zero # sub A
-    add $s1, $a1, $zero # sub B
+    add $s0, $a0, $zero # player sub
+    add $s1, $a1, $zero # enemy sub
 
-    # if B is not alive, A may have scored a hit
-    lw $t0, 52($s1) # B->alive flag
-    bne $t0, $zero, notify_hit_function_B # otherwise, move on to B
+    # if enemy is not alive, player may have scored a hit
+    lw $t0, 52($s1) # enemy->alive flag
+    bne $t0, $zero, notify_hit_function_return # otherwise, return
 
-    # if A has fired, A has scored a hit
-    lw $t0, 40($s0) # A->fire flag
-    beq $t0, $zero, notify_hit_function_B # otherwise, move on to B
+    # if player has fired, player has scored a hit
+    lw $t0, 40($s0) # player->fire flag
+    beq $t0, $zero, notify_hit_function_return # otherwise, return
 
-    # notify hit for A
+    # notify hit for player
     addi $sp, $sp, -12 # 3 argument words
     la $t0, hit_notify_string_0
     sw $t0, 0($sp)
-    lw $t1, 4($s0) # A->player int
+    lw $t1, 4($s0) # player int
     sw $t1, 4($sp)
     la $t0, hit_notify_string_1
     sw $t0, 8($sp)
@@ -563,28 +566,6 @@ notify_hit_function: # a0 -> submarine struct; a1 -> submarine struct
     li $a0, 12
     jal printf_function
     addi $sp, $sp, 12 # pop arguments
-
-    notify_hit_function_B:
-        # if A is not alive, B may have scored a hit
-        lw $t0, 52($s0) # A->alive flag
-        bne $t0, $zero, notify_hit_function_return # otherwise, return
-
-        # if B has fired, B has scored a hit
-        lw $t0, 40($s1) # B->fire flag
-        beq $t0, $zero, notify_hit_function_return # otherwise, return
-
-        # notify hit for B
-        addi $sp, $sp, -12 # 3 argument words
-        la $t0, hit_notify_string_0
-        sw $t0, 0($sp)
-        lw $t1, 4($s1) # B->player int
-        sw $t1, 4($sp)
-        la $t0, hit_notify_string_1
-        sw $t0, 8($sp)
-
-        li $a0, 12
-        jal printf_function
-        addi $sp, $sp, 12 # pop arguments
 
     notify_hit_function_return:
         lw $ra, 0($sp)
