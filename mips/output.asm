@@ -82,8 +82,24 @@ player_ready_string_1:
 
 player_menu_string:
     .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n"
+
 player_prompt_string:
     .asciiz "\nWhat are your orders, Captain? "
+
+compass_string:
+    .asciiz "           North\n             ^\n      West <   > East\n             v\n           South\n"
+
+graphic_west_string:
+    .asciiz "          Starboard\n             __\n          __|~ |___\n  Ahead  ( ==      `- Astern\n\n            Port\n"
+
+graphic_east_string:
+    .asciiz "            Port\n              __\n          ___| ~|__\n Astern -'      == )  Ahead\n\n          Starboard\n"
+
+graphic_north_string:
+    .asciiz "           Ahead\n\n             --\n            |  |\n     Port  ||()|| Starboard\n            |  |\n            |  |\n             /\\\n           Astern\n"
+
+graphic_south_string:
+    .asciiz "           Astern\n             \\/\n            |  |\n            |  |\n Starboard ||()||  Port\n            |  |\n             --\n\n           Ahead\n"
 
 .text
 
@@ -720,43 +736,44 @@ notify_victor_function: # a0 -> submarine struct; a1 -> submarine struct
         jr $ra
     jr $ra
 
-alert_graphic_function:
+alert_graphic_function: # a0 -> submarine struct
 # void alert_graphic(submarine sub)
 # {
 #     printf("%s%s%s%s%s\n", COMPASS_0, COMPASS_1, COMPASS_2, COMPASS_3, COMPASS_4);
-#     if (sub.rotation.y > 0) printf("%s%s%s%s%s%s%s%s%s\n",
-#         GRAPHIC_NORTH_0,
-#         GRAPHIC_NORTH_1,
-#         GRAPHIC_NORTH_2,
-#         GRAPHIC_NORTH_3,
-#         GRAPHIC_NORTH_4,
-#         GRAPHIC_NORTH_5,
-#         GRAPHIC_NORTH_6,
-#         GRAPHIC_NORTH_7,
-#         GRAPHIC_NORTH_8);
-#     else if (sub.rotation.y < 0) printf("%s%s%s%s%s%s%s%s%s\n",
-#         GRAPHIC_SOUTH_0,
-#         GRAPHIC_SOUTH_1,
-#         GRAPHIC_SOUTH_2,
-#         GRAPHIC_SOUTH_3,
-#         GRAPHIC_SOUTH_4,
-#         GRAPHIC_SOUTH_5,
-#         GRAPHIC_SOUTH_6,
-#         GRAPHIC_SOUTH_7,
-#         GRAPHIC_SOUTH_8);
-#     else if (sub.rotation.x > 0) printf("%s%s%s%s%s%s\n",
-#         GRAPHIC_EAST_0,
-#         GRAPHIC_EAST_1,
-#         GRAPHIC_EAST_2,
-#         GRAPHIC_EAST_3,
-#         GRAPHIC_EAST_4,
-#         GRAPHIC_EAST_5);
-#     else if (sub.rotation.x < 0) printf("%s%s%s%s%s%s\n",
-#         GRAPHIC_WEST_0,
-#         GRAPHIC_WEST_1,
-#         GRAPHIC_WEST_2,
-#         GRAPHIC_WEST_3,
-#         GRAPHIC_WEST_4,
-#         GRAPHIC_WEST_5);
-# }
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    # save submarine pointer to s register
+    add $s0, $a0, $zero # player sub
+
+    # print the compass
+    la $a0, compass_string
+    jal print_string_function
+
+    # get the current rotation
+    lw $t1, 16($s0) # rotation.x
+    lw $t2, 20($s0) # rotation.y
+
+    la $a0, graphic_east_string
+    slt $t0, $zero, $t1 # x > 0
+    bne $t0, $zero, alert_graphic_function_print
+
+    la $a0, graphic_north_string
+    slt $t0, $zero, $t2 # y > 0
+    bne $t0, $zero, alert_graphic_function_print
+
+    la $a0, graphic_west_string
+    slt $t0, $t1, $zero # x < 0
+    bne $t0, $zero, alert_graphic_function_print
+
+    la $a0, graphic_south_string
+    slt $t0, $t2, $zero # y < 0
+    bne $t0, $zero, alert_graphic_function_print
+
+    alert_graphic_function_print:
+        jal print_string_function
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8 # pop stack frame
     jr $ra
