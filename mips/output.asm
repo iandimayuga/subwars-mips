@@ -12,8 +12,11 @@ status_alert_string_2:
 status_alert_string_3:
     .asciiz ".\n"
 
-motion_alert_string:
-    .asciiz "Sonar alerts enemy sub in motion somewhere ahead, within %d units!\n"
+motion_alert_string_0:
+    .asciiz "Sonar alerts enemy sub in motion somewhere ahead, within "
+motion_alert_string_1:
+    .asciiz " units!\n"
+
 pinger_alert_string:
     .asciiz "Sonar has determined enemy position at %d N %d E. However, the enemy has heard the ping as well!\n"
 pingee_alert_string:
@@ -218,7 +221,7 @@ get_ready_function: # a0 -> submarine struct
     addi $sp, $sp, -12 # 3 words
     la $t0, player_ready_string_0
     sw $t0, 0($sp)
-    li $t1, 4($s0) # player int
+    lw $t1, 4($s0) # player int
     sw $t1, 4($sp)
     la $t0, player_ready_string_1
     sw $t0, 8($sp)
@@ -240,9 +243,9 @@ alert_status_function: # a0 -> submarine struct
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     # save parameter to s register
-    add $s0, $a0, $zero # sub A
+    add $s0, $a0, $zero # player sub
 
-    addi $sp, $sp, -20 # 5 words
+    addi $sp, $sp, -20 # 5 argument words
     la $t0, status_alert_string_0
     sw $t0, 0($sp)
     lw $t1, 12($s0) # position.y
@@ -256,7 +259,7 @@ alert_status_function: # a0 -> submarine struct
 
     li $a0, 20
     jal printf_function
-    addi $sp, $sp, 20
+    addi $sp, $sp, 20 # pop arguments
 
     # print direction string
     lw $a0, 16($s0) # rotation.x
@@ -274,25 +277,72 @@ alert_status_function: # a0 -> submarine struct
     addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
-alert_motion_function:
-# void alert_motion(submarine sub, submarine enemy)
-# {
-#     if (enemy.move || enemy.turn)
-#     {
-#         // subtract player position from enemy position for direction to enemy
-#         vector ray = subtract(enemy.position, sub.position);
-#
-#         // compare direction to enemy with current rotation
-#         int prod = dot(ray, sub.rotation);
-#
-#         // alert if facing enemy in motion (does not detect directly to the side)
-#         if (prod > 0 && manhattan_length(ray) <= DETECT_DISTANCE)
-#         {
-#             printf(MOTION_ALERT, DETECT_DISTANCE);
-#         }
-#     }
-# }
-    jr $ra
+alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # player sub
+    add $s1, $a1, $zero # enemy sub
+
+    # if enemy has moved or turned, check for detection
+    lw $t0, 24($s1) # enemy->move flag
+    bne $t0, $zero, alert_motion_function_detect
+    lw $t0, 32($s1) # enemy->turn flag
+    bne $t0, $zero, alert_motion_function_detect
+
+    # else just return
+    j alert_motion_function_return
+
+    alert_motion_function_detect:
+        # find direction to enemy by subtracting player position from enemy position
+        lw $a0, 8($s1) # enemy->position.x
+        lw $a1, 12($s1) # enemy->position.y
+        lw $a2, 8($s0) # player->position.x
+        lw $a3, 12($s0) # player->position.y
+        jal subtract_function
+
+        # compare current rotation with direction to enemy
+        add $a0, $v0, $zero # ray.x
+        add $a1, $v1, $zero # ray.y
+        lw $a2, 16($s0) # player->rotation.x
+        lw $a3, 20($s0) # player->rotation.y
+        jal dot_function
+
+        # if 0 >= product, enemy is not in front of sub
+        slt $t0, $zero, $v0
+        beq $t0, $zero, alert_motion_function_return
+
+        # find manhattan distance to enemy
+        add $a0, $v0, $zero # ray.x
+        add $a1, $v1, $zero # ray.y
+        jal manhattan_length_function
+
+        # if manhattan distance <= 5 then motion has been detected
+        li $t0, 5 # detection distance
+        slt $t0, $t0, $v0 # check if 5 < distance
+        bne $t0, $zero, alert_motion_function_return
+
+    # print motion alert
+    addi $sp, $sp, -12 # 3 argument words
+    la $t0, motion_alert_string_0
+    sw $t0, 0($sp)
+    li $t1, 5 # detection distance
+    sw $t1, 4($sp)
+    la $t0, motion_alert_string_1
+    sw $t0, 8($sp)
+
+    li $a0, 12
+    jal printf_function
+    addi $sp, $sp, 12 # pop arguments
+
+    alert_motion_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 alert_bounds_function:
 # void alert_bounds(submarine sub)
