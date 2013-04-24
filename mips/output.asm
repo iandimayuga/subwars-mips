@@ -44,6 +44,7 @@ bounds_alert_string:
 
 endgame_notify_string:
     .asciiz "ENDGAME\n\n"
+
 collide_notify_string:
     .asciiz "Both subs have collided!!\n"
 
@@ -63,8 +64,11 @@ death_notify_string_3:
 death_notify_string_4:
     .asciiz "!\n"
 
-victor_notify_string:
-    .asciiz "\nPlayer %d is victorious! Praise the motherland!\n"
+victor_notify_string_0:
+    .asciiz "\nPlayer "
+victor_notify_string_1:
+    .asciiz " is victorious! Praise the motherland!\n"
+
 draw_notify_string:
     .asciiz "\nThere was no victory this day.\n"
 
@@ -657,13 +661,63 @@ notify_death_function: # a0 -> submarine struct
         addi $sp, $sp, 8 # pop stack frame
         jr $ra
 
-notify_victor_function:
-# void notify_victor(submarine A, submarine B)
-# {
-#     if (A.alive) printf(VICTOR_NOTIFY, A.player);
-#     else if (B.alive) printf(VICTOR_NOTIFY, B.player);
-#     else printf(DRAW_NOTIFY);
-# }
+notify_victor_function: # a0 -> submarine struct; a1 -> submarine struct
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # sub B
+
+    # if A is alive, A is the victor
+    lw $t0, 52($s0) # A->alive flag
+    beq $t0, $zero, notify_victor_function_B # otherwise, check B
+
+    # declare A victorious
+    addi $sp, $sp, -12 # 3 argument words
+    la $t0, victor_notify_string_0
+    sw $t0, 0($sp)
+    lw $t1, 4($s0) # A->player int
+    sw $t1, 4($sp)
+    la $t0, victor_notify_string_1
+    sw $t0, 8($sp)
+
+    li $a0, 12
+    jal printf_function
+    addi $sp, $sp, 12 # pop arguments
+
+    j notify_victor_function_return
+
+    notify_victor_function_B:
+        # if B is alive, B is the victor
+        lw $t0, 52($s1) # B->alive flag
+        beq $t0, $zero, notify_victor_function_draw # otherwise, draw
+
+        # declare B victorious
+        addi $sp, $sp, -12 # 3 argument words
+        la $t0, victor_notify_string_0
+        sw $t0, 0($sp)
+        lw $t1, 4($s1) # B->player int
+        sw $t1, 4($sp)
+        la $t0, victor_notify_string_1
+        sw $t0, 8($sp)
+
+        li $a0, 12
+        jal printf_function
+        addi $sp, $sp, 12 # pop arguments
+
+    notify_victor_function_draw:
+        # print draw notification
+        la $a0, draw_notify_string
+        jal print_string_function
+
+    notify_victor_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
     jr $ra
 
 alert_graphic_function:
