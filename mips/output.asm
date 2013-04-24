@@ -593,15 +593,34 @@ notify_hit_function: # a0 -> submarine struct; a1 -> submarine struct
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-notify_collide_function:
-# void notify_collide(submarine A, submarine B)
-# {
-#     // notify if either sub collided with the other
-#     if (A.collide || B.collide)
-#     {
-#         printf(COLLIDE_NOTIFY);
-#     }
-# }
+notify_collide_function: # a0 -> submarine struct; a1 -> submarine struct
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # sub B
+
+    # if either has collided with the other, they are both sunk
+    lw $t0, 48($s0) # A->collide flag
+    bne $t0, $zero, notify_collide_function_true
+    lw $t0, 48($s1) # B->collide flag
+    bne $t0, $zero, notify_collide_function_true
+
+    j notify_collide_function_return
+
+    notify_collide_function_true:
+        # print collision notification
+        la $a0, collide_notify_string
+        jal print_string_function
+
+    notify_collide_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
     jr $ra
 
 notify_death_function:
