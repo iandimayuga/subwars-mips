@@ -357,8 +357,8 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         add $s3, $v1, $zero # ray.y
 
         # compare current rotation with direction to enemy
-        add $a0, $s0, $zero # ray.x
-        add $a1, $s1, $zero # ray.y
+        add $a0, $s2, $zero # ray.x
+        add $a1, $s3, $zero # ray.y
         lw $a2, 16($s0) # player->rotation.x
         lw $a3, 20($s0) # player->rotation.y
         jal dot_function
@@ -368,8 +368,8 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         beq $t0, $zero, alert_motion_function_return
 
         # find manhattan distance to enemy
-        add $a0, $s0, $zero # ray.x
-        add $a1, $s1, $zero # ray.y
+        add $a0, $s2, $zero # ray.x
+        add $a1, $s3, $zero # ray.y
         jal manhattan_length_function
 
         # if manhattan distance <= 5 then motion has been detected
