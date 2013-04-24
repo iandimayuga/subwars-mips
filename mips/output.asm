@@ -209,6 +209,32 @@ get_ready_function: # a0 -> submarine struct
 #         if (c=='\n' || c==EOF) break;
 #     }
 # }
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    # save parameter to s register
+    add $s0, $a0, $zero # sub A
+
+    la $a0, console_clear_string
+    jal print_string_function
+
+    addi $sp, $sp, -12
+    la $t0, player_ready_string_0
+    sw $t0, 0($sp)
+    li $t0, 123
+    sw $t0, 4($sp)
+    la $t0, player_ready_string_1
+    sw $t0, 8($sp)
+    li $a0, 12
+    jal printf_function
+    addi $sp, $sp, 12
+
+    li $v0, 8 # receive input
+    syscall
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
 alert_status_function: # a0 -> submarine struct
