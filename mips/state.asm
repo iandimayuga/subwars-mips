@@ -201,7 +201,7 @@ check_collision_function: # a0 -> submarine struct; a1 -> submarine struct
         sw $t0, 48($s0) # A->collide = true
         sw $t0, 48($s1) # B->collide = true
         sw $zero, 52($s0) # A->alive = false
-        sw $zero, 52($s0) # B->alive = false
+        sw $zero, 52($s1) # B->alive = false
 
     check_collision_function_return:
         lw $ra, 0($sp)
