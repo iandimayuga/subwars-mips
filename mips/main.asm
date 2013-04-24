@@ -40,7 +40,7 @@ main_loop:
     # get player 1 input and store it in s2
     li $v0, 5
     syscall
-    move $s2, $a0
+    move $s2, $v0
 
     # generate alerts for player 2
     move $a0, $s1
@@ -50,7 +50,7 @@ main_loop:
     # get player 2 input and store it in s3
     li $v0, 5
     syscall
-    move $s3, $a0
+    move $s3, $v0
     
     # reset the flags for sub 2 and then 1
     move $a0, $s0
