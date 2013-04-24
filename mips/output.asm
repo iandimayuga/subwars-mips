@@ -199,16 +199,6 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     jr $ra
 
 get_ready_function: # a0 -> submarine struct
-# void get_ready(submarine sub)
-# {
-#     printf(CONSOLE_CLEAR);
-#     printf(PLAYER_READY, sub.player);
-#     while (true)
-#     {
-#         char c=getchar();
-#         if (c=='\n' || c==EOF) break;
-#     }
-# }
     addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
     sw $ra, 0($sp)
     sw $s0, 4($sp)
