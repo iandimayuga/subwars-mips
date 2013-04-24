@@ -325,10 +325,12 @@ alert_status_function: # a0 -> submarine struct
     jr $ra
 
 alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
-    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    addi $sp, $sp, -20 # allocate 5 words on stack: ra, s0-3
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    sw $s3, 16($sp)
     # save parameters to s register
     add $s0, $a0, $zero # player sub
     add $s1, $a1, $zero # enemy sub
@@ -350,9 +352,13 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         lw $a3, 12($s0) # player->position.y
         jal subtract_function
 
+        # save ray
+        add $s2, $v0, $zero # ray.x
+        add $s3, $v1, $zero # ray.y
+
         # compare current rotation with direction to enemy
-        add $a0, $v0, $zero # ray.x
-        add $a1, $v1, $zero # ray.y
+        add $a0, $s0, $zero # ray.x
+        add $a1, $s1, $zero # ray.y
         lw $a2, 16($s0) # player->rotation.x
         lw $a3, 20($s0) # player->rotation.y
         jal dot_function
@@ -362,8 +368,8 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         beq $t0, $zero, alert_motion_function_return
 
         # find manhattan distance to enemy
-        add $a0, $v0, $zero # ray.x
-        add $a1, $v1, $zero # ray.y
+        add $a0, $s0, $zero # ray.x
+        add $a1, $s1, $zero # ray.y
         jal manhattan_length_function
 
         # if manhattan distance <= 5 then motion has been detected
@@ -388,7 +394,9 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         lw $ra, 0($sp)
         lw $s0, 4($sp)
         lw $s1, 8($sp)
-        addi $sp, $sp, 12 # pop stack frame
+        lw $s2, 12($sp)
+        lw $s3, 16($sp)
+        addi $sp, $sp, 20 # pop stack frame
         jr $ra
 
 alert_bounds_function: # a0 -> submarine struct
