@@ -122,7 +122,7 @@ void alert_fire(submarine sub, submarine enemy)
         int prod = dot(ray, sub.rotation);
 
         // alert direction to enemy
-        if (prod >= 0)
+        if (prod > 0)
         {
             printf(FIRE_AHEAD_ALERT);
         } else {
