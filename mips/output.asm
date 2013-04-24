@@ -17,8 +17,13 @@ motion_alert_string_0:
 motion_alert_string_1:
     .asciiz " units!\n"
 
-pinger_alert_string:
-    .asciiz "Sonar has determined enemy position at %d N %d E. However, the enemy has heard the ping as well!\n"
+pinger_alert_string_0:
+    .asciiz "Sonar has determined enemy position at "
+pinger_alert_string_1:
+    .asciiz " N "
+pinger_alert_string_2:
+    .asciiz " E. However, the enemy has heard the ping as well!\n"
+
 pingee_alert_string:
     .asciiz "A ping has been detected originating at %d N %d E!\n"
 fire_ahead_alert_string:
@@ -366,12 +371,41 @@ alert_bounds_function: # a0 -> submarine struct
         jr $ra
 
 alert_pinger_function:
-# void alert_pinger(submarine sub, submarine enemy)
-# {
-#     if (sub.ping)
-#         printf(PINGER_ALERT, enemy.position.y, enemy.position.x);
-# }
-    jr $ra
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # player sub
+    add $s1, $a1, $zero # enemy sub
+
+    # check if player pinged
+    lw $t0, 36($s0) # ping flag
+    beq $t0, $zero, alert_pinger_function_return
+
+    # print enemy position information
+    addi $sp, $sp, -20 # 5 argument words
+    la $t0, pinger_alert_string_0
+    sw $t0, 0($sp)
+    lw $t1, 12($s1) # enemy->position.y
+    sw $t1, 4($sp)
+    la $t0, pinger_alert_string_1
+    sw $t0, 8($sp)
+    lw $t1, 8($s1) # enemy->position.x
+    sw $t1, 12($sp)
+    la $t0, pinger_alert_string_2
+    sw $t0, 16($sp)
+
+    li $a0, 20
+    jal printf_function
+    addi $sp, $sp, 20 # pop arguments
+
+    alert_pinger_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 alert_pingee_function:
 # void alert_pingee(submarine enemy)
