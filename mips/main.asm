@@ -74,11 +74,13 @@ main_loop:
 
     # evaluate action
     move $a0, $s0
-    move $a1, $s2
+    move $a1, $s1
+    move $a2, $s2
     jal evaluate_action_function
     # evaluate action for sub 2 and action
     move $a0, $s1
-    move $a1, $s3
+    move $a1, $s0
+    move $a2, $s3
     jal evaluate_action_function
 
     j main_loop
