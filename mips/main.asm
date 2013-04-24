@@ -3,7 +3,7 @@
 .data
 stalin_string:
     .asciiz "Hello World! My name is Joseph Stalin.\nMy submarine fleet has been launched to dominate your MIPS.\n"
-enter_to_begin:
+begin_string:
     .asciiz "PRESS ENTER TO BEGIN\n"
 
 .text
@@ -14,11 +14,11 @@ main:
     jal print_string_function
     la $a0, stalin_string
     jal print_string_function
-    la $a0, enter_to_begin
+    la $a0, begin_string
     jal print_string_function
 
-    #I just chose to skip the loop here and wait for them to press enter
-    li $v0, 8
+    # Wait for user to press enter
+    li $v0, 5
     syscall
 
     # get the two structs and save them in s0 & s1

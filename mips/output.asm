@@ -277,7 +277,7 @@ get_ready_function: # a0 -> submarine struct
     jal printf_function
     addi $sp, $sp, 12 # pop arguments
 
-    li $v0, 8 # receive input
+    li $v0, 5 # receive input
     syscall
 
     lw $ra, 0($sp)
