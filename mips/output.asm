@@ -46,8 +46,12 @@ endgame_notify_string:
     .asciiz "ENDGAME\n\n"
 collide_notify_string:
     .asciiz "Both subs have collided!!\n"
-hit_notify_string:
-    .asciiz "Player %d's torpedo has found its target!!\n"
+
+hit_notify_string_0:
+    .asciiz "Player "
+hit_notify_string_1:
+    .asciiz "'s torpedo has found its target!!\n"
+
 death_notify_string:
     .asciiz "Player %d's submarine has been sunk at %d N %d E, facing %s!\n"
 victor_notify_string:
@@ -228,7 +232,7 @@ get_ready_function: # a0 -> submarine struct
     la $a0, console_clear_string
     jal print_string_function
 
-    addi $sp, $sp, -12 # 3 words
+    addi $sp, $sp, -12 # 3 argument words
     la $t0, player_ready_string_0
     sw $t0, 0($sp)
     lw $t1, 4($s0) # player int
@@ -238,7 +242,7 @@ get_ready_function: # a0 -> submarine struct
 
     li $a0, 12
     jal printf_function
-    addi $sp, $sp, 12
+    addi $sp, $sp, 12 # pop arguments
 
     li $v0, 8 # receive input
     syscall
@@ -530,13 +534,64 @@ alert_fire_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         addi $sp, $sp, 20 # pop stack frame
         jr $ra
 
-notify_hit_function:
-# void notify_hit(submarine A, submarine B)
-# {
-#     if (!B.alive && A.fire) printf(HIT_NOTIFY, A.player);
-#     if (!A.alive && B.fire) printf(HIT_NOTIFY, B.player);
-# }
-    jr $ra
+notify_hit_function: # a0 -> submarine struct; a1 -> submarine struct
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    # save parameters to s register
+    add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # sub B
+
+    # if B is not alive, A may have scored a hit
+    lw $t0, 52($s1) # B->alive flag
+    bne $t0, $zero, notify_hit_function_B # otherwise, move on to B
+
+    # if A has fired, A has scored a hit
+    lw $t0, 40($s0) # A->fire flag
+    beq $t0, $zero, notify_hit_function_B # otherwise, move on to B
+
+    # notify hit for A
+    addi $sp, $sp, -12 # 3 argument words
+    la $t0, hit_notify_string_0
+    sw $t0, 0($sp)
+    lw $t1, 4($s0) # A->player int
+    sw $t1, 4($sp)
+    la $t0, hit_notify_string_1
+    sw $t0, 8($sp)
+
+    li $a0, 12
+    jal printf_function
+    addi $sp, $sp, 12 # pop arguments
+
+    notify_hit_function_B:
+        # if A is not alive, B may have scored a hit
+        lw $t0, 52($s0) # A->alive flag
+        bne $t0, $zero, notify_hit_function_return # otherwise, return
+
+        # if B has fired, B has scored a hit
+        lw $t0, 40($s1) # B->fire flag
+        beq $t0, $zero, notify_hit_function_return # otherwise, return
+
+        # notify hit for B
+        addi $sp, $sp, -12 # 3 argument words
+        la $t0, hit_notify_string_0
+        sw $t0, 0($sp)
+        lw $t1, 4($s1) # B->player int
+        sw $t1, 4($sp)
+        la $t0, hit_notify_string_1
+        sw $t0, 8($sp)
+
+        li $a0, 12
+        jal printf_function
+        addi $sp, $sp, 12 # pop arguments
+
+    notify_hit_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        lw $s1, 8($sp)
+        addi $sp, $sp, 12 # pop stack frame
+        jr $ra
 
 notify_collide_function:
 # void notify_collide(submarine A, submarine B)
