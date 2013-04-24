@@ -3,8 +3,15 @@
 
 .data
 
-status_alert_string:
-    .asciiz "Captain! Our current position is %d N %d E, facing %s.\n"
+status_alert_string_0:
+    .asciiz "Captain! Our current position is "
+status_alert_string_1:
+    .asciiz " N "
+status_alert_string_2:
+    .asciiz " E, facing "
+status_alert_string_3:
+    .asciiz ".\n"
+
 motion_alert_string:
     .asciiz "Sonar alerts enemy sub in motion somewhere ahead, within %d units!\n"
 pinger_alert_string:
@@ -229,12 +236,42 @@ get_ready_function: # a0 -> submarine struct
     jr $ra
 
 alert_status_function: # a0 -> submarine struct
-# void alert_status(submarine sub)
-# {
-#     char* dir = direction(sub.rotation);
-#
-#     printf(STATUS_ALERT, sub.position.y, sub.position.x, dir);
-# }
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    # save parameter to s register
+    add $s0, $a0, $zero # sub A
+
+    addi $sp, $sp, -20 # 5 words
+    la $t0, status_alert_string_0
+    sw $t0, 0($sp)
+    lw $t1, 12($s0) # position.y
+    sw $t1, 4($sp)
+    la $t0, status_alert_string_1
+    sw $t0, 8($sp)
+    lw $t1, 8($s0) # position.x
+    sw $t1, 12($sp)
+    la $t0, status_alert_string_2
+    sw $t0, 16($sp)
+
+    li $a0, 20
+    jal printf_function
+    addi $sp, $sp, 20
+
+    # print direction string
+    lw $a0, 16($s0) # rotation.x
+    lw $a1, 20($s0) # rotation.y
+    jal direction_function
+
+    add $a0, $v0, $zero # direction string
+    jal print_string_function
+
+    la $a0, status_alert_string_3
+    jal print_string_function
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
 alert_motion_function:
