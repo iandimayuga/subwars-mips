@@ -27,7 +27,7 @@ pinger_alert_string_2:
 pingee_alert_string_0:
     .asciiz "A ping has been detected originating at "
 pingee_alert_string_1:
-    .asciiz "N "
+    .asciiz " N "
 pingee_alert_string_2:
     .asciiz " E!\n"
 
