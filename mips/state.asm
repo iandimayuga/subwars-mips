@@ -365,9 +365,9 @@ evaluate_action_function: # a0 -> submarine struct; a1 -> enemy submarine struct
 
     # switch on the value of a2
     addi $t0, $zero, 4
-    beq $a2, $t0, evaluate_motion_function_ping
+    beq $a2, $t0, evaluate_action_function_ping
     addi $t0, $zero, 5
-    beq $a2, $t0, evaluate_motion_function_fire
+    beq $a2, $t0, evaluate_action_function_fire
 
     j evaluate_action_function_return
 
