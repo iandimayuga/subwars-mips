@@ -344,12 +344,26 @@ alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-alert_bounds_function:
-# void alert_bounds(submarine sub)
-# {
-#     if (sub.bounds) printf(BOUNDS_ALERT);
-# }
-    jr $ra
+alert_bounds_function: # a0 -> submarine struct
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    # save submarine pointer to s register
+    add $s0, $a0, $zero # player sub
+
+    # check whether player attempted to move out of bounds
+    lw $t0, 44($s0) # bounds flag
+    beq $t0, $zero, alert_bounds_function_return
+
+    # print bounds alert
+    la $a0, bounds_alert_string
+    jal print_string_function
+
+    alert_bounds_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        addi $sp, $sp, 8 # pop stack frame
+        jr $ra
 
 alert_pinger_function:
 # void alert_pinger(submarine sub, submarine enemy)
