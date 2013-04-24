@@ -73,7 +73,7 @@ draw_notify_string:
     .asciiz "\nThere was no victory this day.\n"
 
 console_clear_string:
-    .asciiz "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    .asciiz "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
 player_ready_string_0:
     .asciiz "PLAYER "
@@ -81,25 +81,25 @@ player_ready_string_1:
     .asciiz " PRESS ENTER TO CONTINUE\n"
 
 player_menu_string:
-    .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n"
+    .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n\n"
 
 player_prompt_string:
-    .asciiz "\nWhat are your orders, Captain? "
+    .asciiz "What are your orders, Captain?\n> "
 
 compass_string:
-    .asciiz "           North\n             ^\n      West <   > East\n             v\n           South\n"
+    .asciiz "           North\n             ^\n      West <   > East\n             v\n           South\n\n"
 
 graphic_west_string:
-    .asciiz "          Starboard\n             __\n          __|~ |___\n  Ahead  ( ==      `- Astern\n\n            Port\n"
+    .asciiz "          Starboard\n             __\n          __|~ |___\n  Ahead  ( ==      `- Astern\n\n            Port\n\n"
 
 graphic_east_string:
-    .asciiz "            Port\n              __\n          ___| ~|__\n Astern -'      == )  Ahead\n\n          Starboard\n"
+    .asciiz "            Port\n              __\n          ___| ~|__\n Astern -'      == )  Ahead\n\n          Starboard\n\n"
 
 graphic_north_string:
-    .asciiz "           Ahead\n\n             --\n            |  |\n     Port  ||()|| Starboard\n            |  |\n            |  |\n             /\\\n           Astern\n"
+    .asciiz "           Ahead\n\n             --\n            |  |\n     Port  ||()|| Starboard\n            |  |\n            |  |\n             /\\n           Astern\n\n"
 
 graphic_south_string:
-    .asciiz "           Astern\n             \\/\n            |  |\n            |  |\n Starboard ||()||  Port\n            |  |\n             --\n\n           Ahead\n"
+    .asciiz "           Astern\n             \/\n            |  |\n            |  |\n Starboard ||()||  Port\n            |  |\n             --\n\n           Ahead\n\n"
 
 .text
 
