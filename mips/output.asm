@@ -52,8 +52,17 @@ hit_notify_string_0:
 hit_notify_string_1:
     .asciiz "'s torpedo has found its target!!\n"
 
-death_notify_string:
-    .asciiz "Player %d's submarine has been sunk at %d N %d E, facing %s!\n"
+death_notify_string_0:
+    .asciiz "Player "
+death_notify_string_1:
+    .asciiz "'s submarine has been sunk at "
+death_notify_string_2:
+    .asciiz " N "
+death_notify_string_3:
+    .asciiz " E, facing "
+death_notify_string_4:
+    .asciiz "!\n"
+
 victor_notify_string:
     .asciiz "\nPlayer %d is victorious! Praise the motherland!\n"
 draw_notify_string:
@@ -604,15 +613,49 @@ notify_collide_function: # a0 -> submarine struct; a1 -> submarine struct
         jr $ra
     jr $ra
 
-notify_death_function:
-# void notify_death(submarine sub)
-# {
-#     char* dir = direction(sub.rotation);
-#
-#     // notify if sub is no longer alive
-#     if (!sub.alive) printf(DEATH_NOTIFY, sub.player, sub.position.y, sub.position.x, dir);
-# }
-    jr $ra
+notify_death_function: # a0 -> submarine struct
+    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    # save submarine pointer to s register
+    add $s0, $a0, $zero # player sub
+
+    addi $sp, $sp, -28 # 7 argument words
+    la $t0, death_notify_string_0
+    sw $t0, 0($sp)
+    lw $t1, 4($s0) # player int
+    sw $t1, 4($sp)
+    la $t0, death_notify_string_1
+    sw $t0, 8($sp)
+    lw $t1, 12($s0) # position.y
+    sw $t1, 12($sp)
+    la $t0, death_notify_string_2
+    sw $t0, 16($sp)
+    lw $t1, 8($s0) # position.x
+    sw $t1, 20($sp)
+    la $t0, death_notify_string_3
+    sw $t0, 24($sp)
+
+    li $a0, 28
+    jal printf_function
+    addi $sp, $sp, 28 # pop arguments
+
+    # print direction string
+    lw $a0, 16($s0) # rotation.x
+    lw $a1, 20($s0) # rotation.y
+    jal direction_function
+
+    add $a0, $v0, $zero # direction string
+    jal print_string_function
+
+    la $a0, death_notify_string_4
+    jal print_string_function
+
+    notify_death_function_return:
+        lw $ra, 0($sp)
+        lw $s0, 4($sp)
+        addi $sp, $sp, 8 # pop stack frame
+        jr $ra
 
 notify_victor_function:
 # void notify_victor(submarine A, submarine B)
