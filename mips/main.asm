@@ -2,40 +2,22 @@
 # Entry point for the game
 .data
 intro_art:
-    .asciiz "                                                                                                    
-                                                                                                    
-                                                _____                                               
-                              _________         |    \__                                             
-                             /         \___     |       \__                                           
-                            /               \   |          \                                      
-                            -------_____     \__|      ______\___                                            
-                                                       \         \                                  
-                          ----------________            ----------                                     
-                         /            		      |
-		  |	       --------_______       |                                     
-                         |                                     |                                     
-                         |                                     ------~                                   
-                         |                                            \                          
-   ____                  |                                             \                             
- /     \_   _            |                                              \                         
-|        \_/ |           \                                               \_                       
-|       _     ----        \_                                               \__                      
- \_____/   \_\ --  --       \                                                 \__                     
-           -------  -----    \_                                                  \__                 
-                   ----------                                                        \__                
-                             -------                                                    \____              
-                                                                                             \            
-                                                                                              \__           
-                           |   ___   |    |   |  _   |    |   |  /   _    |  __     |   ___      |        
-                           |  /      |    |   |   |  |    |   |  |    |   |    |    |  /          _      
-                           \___      |    |   |      |    |   |  |        |         \___           |      
-                               |     |    |   |  _   |    |   |  |   _    |   _         |         _|      
-                           |         |    |   |   |  |   /   /   |    |   |    \    |          
-                           \_______  \______  \____   \______    |__  |__ |__   \__ \_______         
-                                                                                                    
-\n\n"
-stalin_string:
-    .asciiz "Hello World! My name is Joseph Stalin.\nMy submarine fleet has been launched to dominate your MIPS.\n"
+    .asciiz "
+                                  _
+                                 |  `-._
+                       .---._    |       `-.
+                      /       `-.|   _______|
+                     |    |`-.       `-.____`-.
+           __        |     `-.|             |
+          |  `-._    |                       `-._
+          `-._``-._   \                           `-._
+               `-. ``-.`-._                            `-.
+                              __| |  | _ | |    |    | _ \ __|
+                             __ | |  | _ { |  \ |  / |   /__ |
+                             ___|____|___|__/`__|_,-_|_\_\___|
+\n\n\n"
+intro_string:
+    .asciiz ""
 begin_string:
     .asciiz "PRESS ENTER TO BEGIN\n"
 
@@ -47,7 +29,7 @@ main:
     jal print_string_function
     la $a0, intro_art
     jal print_string_function
-    la $a0, stalin_string
+    la $a0, intro_string
     jal print_string_function
     la $a0, begin_string
     jal print_string_function
