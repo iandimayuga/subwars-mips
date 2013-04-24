@@ -208,13 +208,14 @@ get_ready_function: # a0 -> submarine struct
     la $a0, console_clear_string
     jal print_string_function
 
-    addi $sp, $sp, -12
+    addi $sp, $sp, -12 # 3 words
     la $t0, player_ready_string_0
     sw $t0, 0($sp)
-    li $t0, 123
-    sw $t0, 4($sp)
+    li $t1, 4($s0) # player int
+    sw $t1, 4($sp)
     la $t0, player_ready_string_1
     sw $t0, 8($sp)
+
     li $a0, 12
     jal printf_function
     addi $sp, $sp, 12
