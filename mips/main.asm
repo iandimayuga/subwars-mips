@@ -17,7 +17,7 @@ intro_art:
                              ___|____|___|__/`__|_,-_|_\_\___|
 \n\n\n"
 intro_string:
-    .asciiz ""
+    .asciiz "Welcome to SUBWARS!"
 begin_string:
     .asciiz "PRESS ENTER TO BEGIN\n"
 
