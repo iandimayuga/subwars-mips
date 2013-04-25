@@ -42,6 +42,9 @@ main:
     la $s0, submarine_1_prototype
     la $s1, submarine_2_prototype
 
+    # initialize loop counter
+    li $s4, 1
+
 main_loop:
     # if either sub has alive set to 0 then it is dead and the loop should end
     lw $t0, 52($s0)
@@ -52,6 +55,7 @@ main_loop:
     # generate alerts for player 1
     move $a0, $s0
     move $a1, $s1
+    move $a2, $s4
     jal generate_alerts_function
 
     # get player 1 input and store it in s2
@@ -62,6 +66,7 @@ main_loop:
     # generate alerts for player 2
     move $a0, $s1
     move $a1, $s0
+    move $a2, $s4
     jal generate_alerts_function
 
     # get player 2 input and store it in s3
@@ -100,6 +105,8 @@ main_loop:
     move $a2, $s3
     jal evaluate_action_function
 
+    # increment and loop
+    addi $s4, $s4, 1
     j main_loop
 
 end_game:
