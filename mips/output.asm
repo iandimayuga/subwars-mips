@@ -83,30 +83,47 @@ player_ready_string_2:
     .asciiz "\n"
 
 player_menu_string:
-    .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n\n"
+    .asciiz "0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n\n"
 
 player_prompt_string:
     .asciiz "What are your orders, Captain?\n> "
+
+map_left_string:
+    .asciiz "\n    "
+map_empty_string:
+    .asciiz " ~"
+map_east_string:
+    .asciiz " >"
+map_north_string:
+    .asciiz " ^"
+map_west_string:
+    .asciiz " <"
+map_south_string:
+    .asciiz " v"
+map_bottom_string:
+    .asciiz "\n      0 1 2 3 4 5 6 7\n\n"
 
 compass_string:
     .asciiz "           North\n             ^\n      West <   > East\n             v\n           South\n\n"
 
 graphic_west_string:
-    .asciiz "          Starboard\n             __\n          __|~ |___\n  Ahead  ( ==      `- Astern\n\n            Port\n\n"
-
+    .asciiz "\n          Starboard\n             __\n          __|~ |___\n  Ahead  ( ==      `- Astern\n\n            Port\n\n"
 graphic_east_string:
-    .asciiz "            Port\n              __\n          ___| ~|__\n Astern -'      == )  Ahead\n\n          Starboard\n\n"
-
+    .asciiz "\n            Port\n              __\n          ___| ~|__\n Astern -'      == )  Ahead\n\n          Starboard\n\n"
 graphic_north_string:
-    .asciiz "           Ahead\n\n             --\n            |  |\n     Port  ||()|| Starboard\n            |  |\n            |  |\n             /\\n           Astern\n\n"
-
+    .asciiz "\n           Ahead\n\n             --\n            |  |\n     Port  ||()|| Starboard\n            |  |\n            |  |\n             /\\n           Astern\n\n"
 graphic_south_string:
-    .asciiz "           Astern\n             \/\n            |  |\n            |  |\n Starboard ||()||  Port\n            |  |\n             --\n\n           Ahead\n\n"
+    .asciiz "\n           Astern\n             \/\n            |  |\n            |  |\n Starboard ||()||  Port\n            |  |\n             --\n\n           Ahead\n\n"
 
 .text
 
 print_string_function: # a0 -> string to print
     li $v0, 4 # print string
+    syscall
+    jr $ra
+
+print_integer_function: # a0 = integer to print
+    li $v0, 1 # print integer
     syscall
     jr $ra
 
@@ -169,13 +186,17 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     add $a1, $a2, $zero # phase number
     jal get_ready_function
 
-    # print informational graphics
-    add $a0, $s0, $zero # player sub
-    jal alert_graphic_function
+    # print the compass
+    la $a0, compass_string
+    jal print_string_function
 
     # print current position and direction
     add $a0, $s0, $zero # player sub
     jal alert_status_function
+
+    # print informational map
+    add $a0, $s0, $zero # player sub
+    jal alert_map_function
 
     # alert if tried to move out of bounds
     add $a0, $s0, $zero # player sub
@@ -200,6 +221,10 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     add $a0, $s0, $zero # player sub
     add $a1, $s1, $zero # enemy sub
     jal alert_pinger_function
+
+    # print informational graphics
+    add $a0, $s0, $zero # player sub
+    jal alert_graphic_function
 
     # give command menu and prompt for input
     la $a0, player_menu_string
@@ -333,6 +358,82 @@ alert_status_function: # a0 -> submarine struct
     lw $s0, 4($sp)
     addi $sp, $sp, 8 # pop stack frame
     jr $ra
+
+alert_map_function: # a0 -> submarine struct
+    addi $sp, $sp, -16 # allocate 4 words on stack: ra, s0-2
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    # save parameter to s register
+    add $s0, $a0, $zero # player sub
+
+    # initialize row counter
+    li $s1, 7 # row (y-value)
+
+    alert_map_function_row:
+        addi $sp, $sp, -8 # 2 argument words
+        la $t0, map_left_string
+        sw $t0, 0($sp)
+        add $t1, $s1, $zero # current row
+        sw $t1, 4($sp)
+
+        li $a0, 8
+        jal printf_function
+        addi $sp, $sp, 8 # pop arguments
+
+        # initialize column counter
+        li $s2, 0 # column (x-value)
+
+        alert_map_function_column:
+            la $a0, map_empty_string
+            # get the current position
+            lw $t0, 8($s0) # position.x
+            lw $t1, 12($s0) # position.y
+            bne $t1, $s1, alert_map_function_print # y != row
+            bne $t0, $s2, alert_map_function_print # x != column
+
+            # we have found the current location
+            lw $t1, 16($s0) # rotation.x
+            lw $t2, 20($s0) # rotation.y
+
+            la $a0, map_east_string
+            slt $t0, $zero, $t1 # x > 0
+            bne $t0, $zero, alert_map_function_print
+
+            la $a0, map_north_string
+            slt $t0, $zero, $t2 # y > 0
+            bne $t0, $zero, alert_map_function_print
+
+            la $a0, map_west_string
+            slt $t0, $t1, $zero # x < 0
+            bne $t0, $zero, alert_map_function_print
+
+            la $a0, map_south_string
+            slt $t0, $t2, $zero # y < 0
+            bne $t0, $zero, alert_map_function_print
+
+            alert_map_function_print:
+                jal print_string_function
+
+            addi $s2, $s2, 1
+            li $t0, 8
+            bne $s2, $t0, alert_map_function_column
+
+        addi $s1, $s1, -1
+        li $t0, -1
+        bne $s1, $t0, alert_map_function_row
+
+    la $a0, map_bottom_string
+    jal print_string_function
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    lw $s2, 12($sp)
+    addi $sp, $sp, 16 # pop stack frame
+    jr $ra
+
 
 alert_motion_function: # a0 -> submarine struct; a1 -> enemy submarine struct
     addi $sp, $sp, -20 # allocate 5 words on stack: ra, s0-3
@@ -769,10 +870,6 @@ alert_graphic_function: # a0 -> submarine struct
     sw $s0, 4($sp)
     # save submarine pointer to s register
     add $s0, $a0, $zero # player sub
-
-    # print the compass
-    la $a0, compass_string
-    jal print_string_function
 
     # get the current rotation
     lw $t1, 16($s0) # rotation.x
