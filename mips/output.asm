@@ -43,7 +43,7 @@ bounds_alert_string:
     .asciiz "Our orders prohibit us from moving that way. We must go a different way!\n"
 
 endgame_notify_string:
-    .asciiz "ENDGAME\n\n"
+    .asciiz "ENDGAME\n"
 
 collide_notify_string:
     .asciiz "Both subs have collided!!\n"
@@ -62,15 +62,15 @@ death_notify_string_2:
 death_notify_string_3:
     .asciiz " E, facing "
 death_notify_string_4:
-    .asciiz "!\n"
+    .asciiz "!\n\n"
 
 victor_notify_string_0:
-    .asciiz "\nPlayer "
+    .asciiz "Player "
 victor_notify_string_1:
     .asciiz " is victorious! Praise the motherland!\n"
 
 draw_notify_string:
-    .asciiz "\nThere was no victory this day.\n"
+    .asciiz "There was no victory this day.\n"
 
 console_clear_string:
     .asciiz "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
@@ -100,6 +100,12 @@ map_west_string:
     .asciiz " <"
 map_south_string:
     .asciiz " v"
+map_collide_string:
+    .asciiz " X"
+map_player_string_0:
+    .asciiz " 1"
+map_player_string_1:
+    .asciiz " 2"
 map_bottom_string:
     .asciiz "\n      0 1 2 3 4 5 6 7\n\n"
 
@@ -196,6 +202,8 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
 
     # print informational map
     add $a0, $s0, $zero # player sub
+    add $a1, $s1, $zero # enemy sub
+    li $a2, 0 # endgame boolean = false
     jal alert_map_function
 
     # alert if tried to move out of bounds
@@ -252,6 +260,12 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     jal print_string_function
     la $a0, endgame_notify_string
     jal print_string_function
+
+    # print informational map
+    add $a0, $s0, $zero # sub A
+    add $a1, $s1, $zero # sub B
+    li $a2, 1 # endgame boolean = true
+    jal alert_map_function
 
     # notify if either sub hit the other with a torpedo
     add $a0, $s0, $zero # sub A
@@ -359,23 +373,27 @@ alert_status_function: # a0 -> submarine struct
     addi $sp, $sp, 8 # pop stack frame
     jr $ra
 
-alert_map_function: # a0 -> submarine struct
-    addi $sp, $sp, -16 # allocate 4 words on stack: ra, s0-2
+alert_map_function: # a0 -> submarine struct; a1 -> submarine struct; a2 -> endgame boolean
+    addi $sp, $sp, -24 # allocate 6 words on stack: ra, s0-4
     sw $ra, 0($sp)
     sw $s0, 4($sp)
     sw $s1, 8($sp)
     sw $s2, 12($sp)
-    # save parameter to s register
-    add $s0, $a0, $zero # player sub
+    sw $s3, 16($sp)
+    sw $s4, 20($sp)
+    # save parameters to s registers
+    add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # sub B
+    add $s2, $a2, $zero # endgame boolean
 
     # initialize row counter
-    li $s1, 7 # row (y-value)
+    li $s3, 7 # row (y-value)
 
     alert_map_function_row:
         addi $sp, $sp, -8 # 2 argument words
         la $t0, map_left_string
         sw $t0, 0($sp)
-        add $t1, $s1, $zero # current row
+        add $t1, $s3, $zero # current row
         sw $t1, 4($sp)
 
         li $a0, 8
@@ -383,15 +401,16 @@ alert_map_function: # a0 -> submarine struct
         addi $sp, $sp, 8 # pop arguments
 
         # initialize column counter
-        li $s2, 0 # column (x-value)
+        li $s4, 0 # column (x-value)
 
         alert_map_function_column:
+            bne $s2, $zero, alert_map_function_endgame
+            # not endgame, get the current player's position
             la $a0, map_empty_string
-            # get the current position
             lw $t0, 8($s0) # position.x
             lw $t1, 12($s0) # position.y
-            bne $t1, $s1, alert_map_function_print # y != row
-            bne $t0, $s2, alert_map_function_print # x != column
+            bne $t1, $s3, alert_map_function_print # y != row
+            bne $t0, $s4, alert_map_function_print # x != column
 
             # we have found the current location
             lw $t1, 16($s0) # rotation.x
@@ -413,16 +432,57 @@ alert_map_function: # a0 -> submarine struct
             slt $t0, $t2, $zero # y < 0
             bne $t0, $zero, alert_map_function_print
 
+            la $a0, map_empty_string
+            j alert_map_function_print
+
+            alert_map_function_endgame:
+                # reset temporary registers
+                li $t4, 0
+                li $t5, 0
+
+                lw $t0, 8($s0) # A->position.x
+                lw $t1, 12($s0) # A->position.y
+                bne $t1, $s3, alert_map_function_checkB # y != row
+                bne $t0, $s4, alert_map_function_checkB # x != column
+
+                # we have found A's current location
+                li $t4, 1
+
+                alert_map_function_checkB:
+                    lw $t2, 8($s1) # B->position.x
+                    lw $t3, 12($s1) # B->position.y
+                    bne $t3, $s3, alert_map_function_evaluate # y != row
+                    bne $t2, $s4, alert_map_function_evaluate # x != column
+
+                    # we have found B's current location
+                    li $t5, 1
+
+                alert_map_function_evaluate:
+                    # A and B both occupy this position
+                    la $a0, map_collide_string
+                    and $t2, $t4, $t5
+                    bne $t2, $zero, alert_map_function_print
+
+                    # A is here
+                    la $a0, map_player_string_0
+                    bne $t4, $zero, alert_map_function_print
+
+                    # B is here
+                    la $a0, map_player_string_1
+                    bne $t5, $zero, alert_map_function_print
+
+                    la $a0, map_empty_string
+
             alert_map_function_print:
                 jal print_string_function
 
-            addi $s2, $s2, 1
+            addi $s4, $s4, 1
             li $t0, 8
-            bne $s2, $t0, alert_map_function_column
+            bne $s4, $t0, alert_map_function_column
 
-        addi $s1, $s1, -1
+        addi $s3, $s3, -1
         li $t0, -1
-        bne $s1, $t0, alert_map_function_row
+        bne $s3, $t0, alert_map_function_row
 
     la $a0, map_bottom_string
     jal print_string_function
@@ -431,7 +491,9 @@ alert_map_function: # a0 -> submarine struct
     lw $s0, 4($sp)
     lw $s1, 8($sp)
     lw $s2, 12($sp)
-    addi $sp, $sp, 16 # pop stack frame
+    lw $s3, 16($sp)
+    lw $s4, 20($sp)
+    addi $sp, $sp, 24 # pop stack frame
     jr $ra
 
 
