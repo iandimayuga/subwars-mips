@@ -3,5 +3,8 @@ subwars
 # Binary executable (windows)
 subwars.exe
 
+# Aggregate MIPS assembly file
+subwars.asm
+
 # vim files
 *.swp
