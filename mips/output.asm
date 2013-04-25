@@ -931,9 +931,6 @@ notify_victor_function: # a0 -> submarine struct; a1 -> submarine struct
     jr $ra
 
 alert_graphic_function: # a0 -> submarine struct
-# void alert_graphic(submarine sub)
-# {
-#     printf("%s%s%s%s%s\n", COMPASS_0, COMPASS_1, COMPASS_2, COMPASS_3, COMPASS_4);
     addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
     sw $ra, 0($sp)
     sw $s0, 4($sp)
