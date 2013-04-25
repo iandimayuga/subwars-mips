@@ -12,17 +12,9 @@ Subsequently, we have manually "compiled" the C implementation into MIPS assembl
 
 Installation
 ------------
-Run qtSpim and load the MIPS assembly files in the following order:
-
-1. mips/main.asm
-
-2. mips/output.asm
-
-3. mips/state.asm
-
-4. mips/math.asm
-
-Then begin the simulation.
+1. Change to **mips** directory and run **make**. This should create a new **subwars.asm** file.
+2. Run qtSpim and load the MIPS assembly file **subwars.asm**.
+3. Begin the simulation.
 
 Gameplay
 --------
