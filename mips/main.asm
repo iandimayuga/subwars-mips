@@ -19,7 +19,7 @@ intro_art:
 intro_string:
     .asciiz "Welcome to SUBWARS!!\n\nYou are Player 1 and Player 2, the top two Nuclear Submarine commanders in the Soviet Navy.\nIt is the year 1958, and Secretary Khrushchev has ordered a round of War Games.\nYou have both surfaced in the Atlantic Ocean just off the Ivory Coast.\nYour orders are to find and sink your comrade's submarine.\n\nThis is a turn-based game based on the concept of limited information.\nEach phase, Player 1 will give orders, followed by Player 2.\nThe phase will then commence, and when actions have been taken, the next phase will begin.\nYou must stay within an 8x8 grid from 0 N 0 E to 7 N 7 E.\nExplore the area and try to listen for your enemy.\nIf they use their engines while in front of you, you may detect them.\nTorpedo fire and pings can be heard by everyone.\nIf you are pointing directly at your enemy and fire a torpedo, you will be victorious!!\n\n"
 map_string:
-    .asciiz "Starting conditions are indicated below:\n
+    .asciiz "Starting conditions are indicated below.\nThis is the only map you will receive, so you should draft your own charts.\n
    0 E                         7 E
   +---+---+---+---+---+---+---+---+
   |   |   |   |   |   |   |   |<P2| 7 N
