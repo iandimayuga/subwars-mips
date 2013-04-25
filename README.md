@@ -7,15 +7,21 @@ Implementation
 --------------
 
 The C implementation (found in "./c") will be used for debugging and game design.
+
 Subsequently, we will manually "compile" the C implementation into MIPS assembly code (found in "./mips") for submission.
 
 Installation
 ------------
 Run qtSpim and load the MIPS assembly files in the following order:
+
 1. mips/main.asm
+
 2. mips/output.asm
+
 3. mips/state.asm
+
 4. mips/math.asm
+
 Then begin the simulation.
 
 Gameplay
