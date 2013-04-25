@@ -78,7 +78,9 @@ console_clear_string:
 player_ready_string_0:
     .asciiz "PLAYER "
 player_ready_string_1:
-    .asciiz " PRESS ENTER TO CONTINUE\n"
+    .asciiz " PRESS ENTER TO BEGIN PHASE "
+player_ready_string_2:
+    .asciiz "\n"
 
 player_menu_string:
     .asciiz "\n0: Full Ahead\n1: Full Astern\n2: Turn to Port\n3: Turn to Starboard\n4: Ping\n5: Fire Ahead\n6: Do Nothing\n\n"
@@ -153,7 +155,7 @@ printf_function: # a0 = arglist size in bytes; sp -> first string address; sp + 
         addi $sp, $sp, 12 # pop stack frame
         jr $ra
 
-generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
+generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct; a2 = phase integer
     addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
     sw $ra, 0($sp)
     sw $s0, 4($sp)
@@ -164,6 +166,7 @@ generate_alerts_function: # a0 -> submarine struct; a1 -> enemy submarine struct
 
     # prompt player for ready
     add $a0, $s0, $zero # player sub
+    add $a1, $a2, $zero # phase number
     jal get_ready_function
 
     # print informational graphics
@@ -256,33 +259,40 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     jr $ra
 
 get_ready_function: # a0 -> submarine struct
-    addi $sp, $sp, -8 # allocate 2 words on stack: ra, s0
+    addi $sp, $sp, -12 # allocate 3 words on stack: ra, s0-1
     sw $ra, 0($sp)
     sw $s0, 4($sp)
-    # save parameter to s register
+    sw $s1, 8($sp)
+    # save parameters to s registers
     add $s0, $a0, $zero # sub A
+    add $s1, $a1, $zero # phase number
 
     la $a0, console_clear_string
     jal print_string_function
 
-    addi $sp, $sp, -12 # 3 argument words
+    addi $sp, $sp, -20 # 5 argument words
     la $t0, player_ready_string_0
     sw $t0, 0($sp)
     lw $t1, 4($s0) # player int
     sw $t1, 4($sp)
     la $t0, player_ready_string_1
     sw $t0, 8($sp)
+    add $t1, $s1, $zero # phase number
+    sw $t1, 12($sp)
+    la $t0, player_ready_string_2
+    sw $t0, 16($sp)
 
-    li $a0, 12
+    li $a0, 20
     jal printf_function
-    addi $sp, $sp, 12 # pop arguments
+    addi $sp, $sp, 20 # pop arguments
 
     li $v0, 5 # receive input
     syscall
 
     lw $ra, 0($sp)
     lw $s0, 4($sp)
-    addi $sp, $sp, 8 # pop stack frame
+    lw $s1, 8($sp)
+    addi $sp, $sp, 12 # pop stack frame
     jr $ra
 
 alert_status_function: # a0 -> submarine struct
