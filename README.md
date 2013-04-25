@@ -1,14 +1,14 @@
 subwars-mips
 ============
 
-Submarine Warfare Simulator in MIPS - EECS 314 Semester Project
+Submarine Warfare Simulator in MIPS - EECS 314 Computer Architecture Semester Project
 
 Implementation
 --------------
 
-The C implementation (found in "./c") will be used for debugging and game design.
+The C implementation (found in "./c") was used for debugging and game design.
 
-Subsequently, we will manually "compile" the C implementation into MIPS assembly code (found in "./mips") for submission.
+Subsequently, we have manually "compiled" the C implementation into MIPS assembly code (found in "./mips") for submission.
 
 Installation
 ------------
