@@ -649,6 +649,9 @@ notify_death_function: # a0 -> submarine struct
     # save submarine pointer to s register
     add $s0, $a0, $zero # player sub
 
+    lw $t0, 52($s0) # alive flag
+    bne $t0, $zero, notify_death_function_return
+
     addi $sp, $sp, -28 # 7 argument words
     la $t0, death_notify_string_0
     sw $t0, 0($sp)
@@ -731,6 +734,8 @@ notify_victor_function: # a0 -> submarine struct; a1 -> submarine struct
         li $a0, 12
         jal printf_function
         addi $sp, $sp, 12 # pop arguments
+
+    j notify_victor_function_return
 
     notify_victor_function_draw:
         # print draw notification
