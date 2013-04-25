@@ -564,7 +564,7 @@ alert_fire_function: # a0 -> submarine struct; a1 -> enemy submarine struct
 
     # if 0 < prod the torpedo was fired toward the player
     slt $t0, $zero, $v0
-    beq $t0, $zero, alert_fire_function_behind
+    beq $t0, $zero, alert_fire_function_away
 
     # torpedo fired toward player
     la $a0, fire_toward_alert_string
