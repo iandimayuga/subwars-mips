@@ -3,6 +3,9 @@
 
 .data
 
+newline_string:
+    .asciiz "\n"
+
 status_alert_string_0:
     .asciiz "Captain! Our current position is "
 status_alert_string_1:
@@ -62,7 +65,7 @@ death_notify_string_2:
 death_notify_string_3:
     .asciiz " E, facing "
 death_notify_string_4:
-    .asciiz "!\n\n"
+    .asciiz "!\n"
 
 victor_notify_string_0:
     .asciiz "Player "
@@ -285,6 +288,10 @@ generate_endgame_function: # a0 -> submarine struct; a1 -> submarine struct
     jal notify_death_function
     add $a0, $s1, $zero # sub B
     jal notify_death_function
+
+    # print a newline
+    la $a0, newline_string
+    jal print_string_function
 
     # congratulate victor, if any
     add $a0, $s0, $zero # sub A
