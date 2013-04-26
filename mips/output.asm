@@ -92,7 +92,7 @@ player_prompt_string:
     .asciiz "What are your orders, Captain?\n> "
 
 map_left_string:
-    .asciiz "\n    "
+    .asciiz "\n     "
 map_empty_string:
     .asciiz " ~"
 map_east_string:
@@ -110,7 +110,7 @@ map_player_string_0:
 map_player_string_1:
     .asciiz " 2"
 map_bottom_string:
-    .asciiz "\n      0 1 2 3 4 5 6 7\n\n"
+    .asciiz "\n       0 1 2 3 4 5 6 7\n\n"
 
 compass_string:
     .asciiz "           North\n             ^\n      West <   > East\n             v\n           South\n\n"
